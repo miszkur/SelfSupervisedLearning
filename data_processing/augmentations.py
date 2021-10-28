@@ -21,7 +21,7 @@ class RandomCropByol(tfkl.Layer):
         super(RandomCropByol, self).__init__()
         self.width = width
         self.height = height
-        self.currecnt_area = self.width * self.height
+        self.current_area = self.width * self.height
 
     def call(self, x):
         new_area = tf.random.uniform(
