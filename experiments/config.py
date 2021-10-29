@@ -26,3 +26,4 @@ def get_direct_pred():
     config = basic_config()
     config.name = 'DirectPred'
     return config
+
