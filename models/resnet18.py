@@ -2,6 +2,7 @@ import tensorflow as tf
 
 
 class BasicBlock(tf.keras.layers.Layer):
+
     def __init__(self, filter_num, stride=1):
         super(BasicBlock, self).__init__()
         self.conv1 = tf.keras.layers.Conv2D(filters=filter_num,
@@ -35,6 +36,7 @@ class BasicBlock(tf.keras.layers.Layer):
         output = tf.nn.relu(tf.keras.layers.add([residual, x]))
 
         return output
+
 
 def make_basic_block_layer(filter_num, blocks, stride=1):
     res_block = tf.keras.Sequential()
@@ -70,6 +72,7 @@ class ResNet18(tf.keras.Model):
         self.layer4 = make_basic_block_layer(filter_num=512,
                                              blocks=2,
                                              stride=2)
+
         self.avgpool = tf.keras.layers.GlobalAveragePooling2D()
 
     def call(self, inputs, training=None, mask=None):
