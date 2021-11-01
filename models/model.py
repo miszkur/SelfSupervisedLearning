@@ -31,17 +31,12 @@ class DirectPred(tf.keras.Model):
 
     def train(
         self, 
-        ds: tf.data.Dataset, 
-        training_samples: int, 
+        ds: tf.data.Dataset,  
         save_path: str,
-        epochs=100, 
-        batch_size=24, 
+        epochs=100,  
         show_history=True):
 
-        steps_per_epoch = training_samples // batch_size
-        history = self.model.fit(ds, epochs=epochs, batch_size=batch_size, verbose=1,
-                                 steps_per_epoch=steps_per_epoch)
-
+        history = self.model.fit(ds, epochs=epochs, verbose=1)
         self.save_model(save_path)
 
         if show_history:
