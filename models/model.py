@@ -29,10 +29,20 @@ class DirectPred(tf.keras.Model):
         self.model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy')
 
 
-    def train(self, X, y, training_samples=100, epochs=100, batch_size=24, show_history=True):
+    def train(
+        self, 
+        ds: tf.data.Dataset, 
+        training_samples: int, 
+        save_path: str,
+        epochs=100, 
+        batch_size=24, 
+        show_history=True):
+
         steps_per_epoch = training_samples // batch_size
-        history = self.model.fit(X, y, epochs=epochs, batch_size=batch_size, verbose=1,
+        history = self.model.fit(ds, epochs=epochs, batch_size=batch_size, verbose=1,
                                  steps_per_epoch=steps_per_epoch)
+
+        self.save_model(save_path)
 
         if show_history:
             plt.figure()
@@ -43,3 +53,11 @@ class DirectPred(tf.keras.Model):
             plt.legend()
             plt.show()
 
+    def save_model(self, saved_model_path):
+        self.model.save(saved_model_path)
+
+    def load_model(self, saved_model_path):
+        model = tf.keras.models.load_model(
+            saved_model_path, compile=False)
+        self.model = model
+        return model
