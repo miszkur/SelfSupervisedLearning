@@ -37,7 +37,7 @@ class Experiment():
         train_loss_results = []
         for epoch in range(epochs):
             epoch_loss_avg = tf.keras.metrics.Mean()
-            print('lets start)
+            print('lets start')
             for x in tqdm(ds):
 
                 # Optimize the model
