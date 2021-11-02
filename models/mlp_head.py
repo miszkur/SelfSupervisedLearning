@@ -6,7 +6,7 @@ tfkl = tfk.layers
 class MLPHead(tfkl.Layer):
 
     def __init__(self, hidden_size=512, output_size=128) -> None:
-        super().__init__()
+        super(MLPHead, self).__init__()
 
         self.hidden_size = hidden_size
 
@@ -16,7 +16,7 @@ class MLPHead(tfkl.Layer):
                 use_bias=True
                 )
             # center and scale are set differently in Byol and DiretPred paper
-            self.batch_norm = tfkl.BatchNorm(
+            self.batch_norm = tfkl.BatchNormalization(
                 momentum=0.9, 
                 epsilon=1e-5, 
                 center=False, 

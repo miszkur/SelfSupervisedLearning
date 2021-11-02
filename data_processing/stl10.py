@@ -23,9 +23,11 @@ def get_stl10(split: str, batch_size=128) -> Tuple[tf.data.Dataset, int]:
         Dataset: preprocessed STL10
     """
     ds, ds_info = tfds.load(
-        'stl10', split=split, with_info=True,as_supervised=True)
+        'stl10', split=split, with_info=True, as_supervised=True)
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.map(resize_to_resnet_input,  num_parallel_calls=tf.data.AUTOTUNE)
+    # TODO: for now that's only for pretraining.
+    ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
     if split == 'test':
         ds = ds.batch(batch_size)
         ds = ds.cache()

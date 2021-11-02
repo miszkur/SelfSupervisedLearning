@@ -3,6 +3,7 @@ import ml_collections
 def basic_config():
     """Retruns common config for most experiments."""
     config = ml_collections.ConfigDict()
+    config.num_classes = 10
     config.batch_size = 128
     config.lr = 0.03
     config.momentum = 0.9
