@@ -16,7 +16,7 @@ def get_stl10(split: str, batch_size=128) -> Tuple[tf.data.Dataset, int]:
 
     Args:
         split (str, required): defines subset of STL10 to get. Possible options:
-        'train', 'unlabelled'.
+        'train', 'unlabelled', 'test'.
         batch_size (int, optional): Size of batches. Defaults to 128.
 
     Returns:
