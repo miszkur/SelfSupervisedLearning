@@ -69,6 +69,9 @@ class Experiment():
                 self.online_network.model.optimizer.apply_gradients(
                     zip(grads, self.online_network.model.trainable_variables))
 
+                # update target network
+                self.update_target_network(self.tau)
+
                 # Track progress
                 epoch_loss_avg.update_state(loss_value)  
 
