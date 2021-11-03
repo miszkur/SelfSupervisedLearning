@@ -5,9 +5,13 @@ def basic_config():
     config = ml_collections.ConfigDict()
     config.num_classes = 10
     config.batch_size = 128
-    config.lr = 0.03
-    config.momentum = 0.9
-    config.weight_decay = 0.0004
+    optimizer_params = ml_collections.ConfigDict()
+    optimizer_params.lr = 0.03
+    optimizer_params.momentum = 0.9
+    optimizer_params.weight_decay = 0.0004
+    config.optimizer_params = optimizer_params
+    # EMA momentum for target network.
+    config.tau = 0.996 
     return config
     
 def get_byol():
