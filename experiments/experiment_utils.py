@@ -14,6 +14,7 @@ class Experiment():
         self.target_network = SiameseNetwork(target=True)
         self.target_network.compile(config.optimizer_params)
         self.tau = config.tau
+        self.eigenspace_experiment = config.eigenspace_experiment
 
     def augment(self, x):
         x_aug = tfa.image.gaussian_filter2d(x)
@@ -37,9 +38,9 @@ class Experiment():
         y = self.target_network(input)
         y_aug = self.target_network(input_aug)
         with tf.GradientTape() as tape:
-            x = self.online_network(input)
+            x, projector_output = self.online_network(input)
             y = tf.stop_gradient(y)
-            x_aug = self.online_network(input_aug)
+            x_aug, projector_output_aug = self.online_network(input_aug)
             y_aug = tf.stop_gradient(y_aug)
             loss_value = self.online_network.loss(x, x_aug, y, y_aug)
         return loss_value, tape.gradient(
@@ -69,7 +70,15 @@ class Experiment():
                 self.online_network.model.optimizer.apply_gradients(
                     zip(grads, self.online_network.model.trainable_variables))
 
-                # update target network
+                # Eignespace alignment experiment
+                if self.eigenspace_experiment:
+                    F = self.online_network.model.layers[3].output
+                    # print(F)
+                    corr = tf.matmul(tf.expand_dims(F, 2), tf.expand_dims(F, 1))
+                    sth = tf.linalg.eigvals(corr[0,:,:])
+                    # print(sth)
+
+                # Update target network
                 self.update_target_network(self.tau)
 
                 # Track progress

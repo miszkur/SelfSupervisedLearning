@@ -1,4 +1,5 @@
 import tensorflow as tf
+from tensorflow.python.eager.def_function import run_functions_eagerly
 from tensorflow.python.ops.nn_impl import moments
 from models.resnet18 import ResNet18
 from models.mlp_head import MLPHead
@@ -23,10 +24,12 @@ class SiameseNetwork(tf.keras.Model):
         input = tf.keras.layers.Input(shape=(self.image_size, self.image_size, 3))
         x = self.encoder(input)
         x = self.flatten(x)
-        y = self.projector(x)
-        if not self.target:
-            y = self.predictor(y)
-        return tfk.models.Model(inputs=input, outputs=y)
+        projection = self.projector(x)
+        if self.target:
+            return tfk.models.Model(inputs=input, outputs=projection)
+
+        y = self.predictor(projection)
+        return tfk.models.Model(inputs=input, outputs=(y, projection))
 
     def call(self, x):
         y = self.model.call(x)

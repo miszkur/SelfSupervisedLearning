@@ -11,13 +11,19 @@ def basic_config():
     optimizer_params.weight_decay = 0.0004
     config.optimizer_params = optimizer_params
     # EMA momentum for target network.
-    config.tau = 0.996 
+    config.tau = 0.996
+    config.eigenspace_experiment = False 
     return config
     
 def get_byol():
     """Returns BYOL configuration."""
     config = basic_config()
     config.name = 'BYOL'
+    return config
+
+def get_eigenspace_experiment():
+    config = get_byol()
+    config.eigenspace_experiment = True
     return config
 
 def get_simsiam():
