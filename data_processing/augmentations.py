@@ -54,7 +54,7 @@ class DataAugCifar10(tfkl.Layer):
     """
 
     def __init__(self, width=224, height=224) -> None:
-        super(DataAug, self).__init__()
+        super(DataAugCifar10, self).__init__()
         self.width = width
         self.height = height
         self.current_area = self.width * self.height
