@@ -59,7 +59,7 @@ class DataAug(tfkl.Layer):
         self.height = height
         self.current_area = self.width * self.height
 
-    def call(self, x, s=1.0):
+    def call(self, x, s=1.0, batch_size=128):
         new_area = tf.random.uniform(
             [], 0.08, 1.0, dtype=tf.float32) * self.current_area
         min_ratio = tf.math.log(3 / 4)
@@ -75,7 +75,7 @@ class DataAug(tfkl.Layer):
 
         # TODO: check batch size
         x = tf.image.random_flip_left_right(x)
-        x = tf.image.random_crop(x, size=[h, w, 3]) 
+        x = tf.image.random_crop(x, size=[batch_size, h, w, 3]) 
         x = tf.image.resize(x, [224, 224], method='bicubic')
 
         x = tfa.image.gaussian_filter2d(x,23,0.1+random.random()/10)

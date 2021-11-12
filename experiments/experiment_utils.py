@@ -17,6 +17,7 @@ class Experiment():
         self.target_network.compile(config.optimizer_params)
         self.tau = config.tau
         self.lambda_ = config.lambda_
+        self.batch_size = config.batch_size
         self.eigenspace_experiment = config.eigenspace_experiment
         self.F = None
         self.F_eigenval = []
@@ -90,7 +91,7 @@ class Experiment():
             for x in tqdm(ds):
 
                 # Optimize the model
-                x_aug = self.data_aug(x)
+                x_aug = self.data_aug(x, batch_size=self.batch_size)
                 loss_value, grads, h1, h2 = self.grad(x, x_aug)
                 self.online_network.model.optimizer.apply_gradients(
                     zip(grads, self.online_network.model.trainable_variables))
