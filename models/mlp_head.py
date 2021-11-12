@@ -1,4 +1,5 @@
 import tensorflow as tf
+import numpy as np
 
 tfk = tf.keras
 tfkl = tfk.layers 
@@ -28,6 +29,10 @@ class MLPHead(tfkl.Layer):
             output_size, 
             use_bias=False
             )
+
+    def symmetry(self):
+        w = self.output_layer.get_weights()[0]
+        return np.sum(np.abs(w-w.T))/np.sum(np.abs(w))
 
     def call(self, x):
         if self.hidden_size is not None:
