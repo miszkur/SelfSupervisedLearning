@@ -49,13 +49,13 @@ class Experiment():
             self.F = self.lambda_ * self.F + (1 - self.lambda_) * corr
 
 
-    def grad(self, input, input_aug):
-        y = self.target_network(input)
-        y_aug = self.target_network(input_aug)
+    def grad(self, input_aug1, input_aug2):
+        y = self.target_network(input_aug1)
+        y_aug = self.target_network(input_aug2)
         with tf.GradientTape() as tape:
-            x, projector_output = self.online_network(input)
+            x, projector_output = self.online_network(input_aug1)
             y = tf.stop_gradient(y)
-            x_aug, projector_output_aug = self.online_network(input_aug)
+            x_aug, projector_output_aug = self.online_network(input_aug2)
             y_aug = tf.stop_gradient(y_aug)
             loss_value = self.online_network.loss(x, x_aug, y, y_aug)
         return (
@@ -91,8 +91,9 @@ class Experiment():
             for x in tqdm(ds):
 
                 # Optimize the model
-                x_aug = self.data_aug(x, batch_size=self.batch_size)
-                loss_value, grads, h1, h2 = self.grad(x, x_aug)
+                x_aug1 = self.data_aug(x, batch_size=self.batch_size)
+                x_aug2 = self.data_aug(x, batch_size=self.batch_size)
+                loss_value, grads, h1, h2 = self.grad(x_aug1, x_aug2)
                 self.online_network.model.optimizer.apply_gradients(
                     zip(grads, self.online_network.model.trainable_variables))
 
