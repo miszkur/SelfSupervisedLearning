@@ -7,7 +7,7 @@ import numpy as np
 import sys
 sys.path.append('../')
 from models.model import SiameseNetwork
-from data_processing.augmentations import DataAug
+from data_processing.augmentations import DataAug, DataAugCifar10
 
 class Experiment():
     def __init__(self, config) -> None:
@@ -24,7 +24,7 @@ class Experiment():
         self.wp_eigenval = []
         self.allignment = []
         self.symmetry = []
-        self.data_aug = DataAug()
+        self.data_aug = DataAugCifar10()
         self.cosine_sim = tf.keras.losses.CosineSimilarity(
             axis=0,
             reduction=tf.keras.losses.Reduction.NONE

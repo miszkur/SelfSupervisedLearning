@@ -3,9 +3,10 @@ import tensorflow_datasets as tfds
 from typing import Tuple
 
 def normalize_img(image, label):
-  """Normalizes images: `uint8` -> `float32`."""
-  return tf.cast(image, tf.float32) / 255., label
-
+    """Normalizes images: `uint8` -> `float32`."""
+    return (
+        tf.image.per_image_standardization(tf.cast(image, tf.float32) / 255.),
+        label)
 
 def resize_to_resnet_input(image, label):
     """Resizes images to resnet compatible size (224x224)."""
