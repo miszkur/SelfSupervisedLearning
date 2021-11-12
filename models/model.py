@@ -19,6 +19,10 @@ class SiameseNetwork(tf.keras.Model):
         self.flatten = tfkl.Flatten()
         self.image_size = image_size
         self.model = self.build_model()
+        # TODO: check axis
+        self.cosine_sim = tf.keras.losses.CosineSimilarity(
+            axis=1
+        )
     
     def build_model(self):
         input = tf.keras.layers.Input(shape=(self.image_size, self.image_size, 3))
@@ -52,8 +56,8 @@ class SiameseNetwork(tf.keras.Model):
 
     @tf.function
     def loss(self, x, x_aug, y, y_aug):
-        loss = self.l2_loss(x, tf.stop_gradient(y_aug))
-        loss += self.l2_loss(x_aug, tf.stop_gradient(y))
+        loss = self.cosine_sim(x, y_aug)
+        loss += self.cosine_sim(x_aug, y)
         return loss
 
     def save_model(self, saved_model_path):

@@ -91,7 +91,8 @@ class Experiment():
             for x in tqdm(ds):
 
                 # Optimize the model
-                x_aug = self.data_aug(x, batch_size=self.batch_size)
+                # x_aug = self.data_aug(x, batch_size=self.batch_size)
+                x_aug = x
                 loss_value, grads, h1, h2 = self.grad(x, x_aug)
                 self.online_network.model.optimizer.apply_gradients(
                     zip(grads, self.online_network.model.trainable_variables))
