@@ -7,7 +7,7 @@ import numpy as np
 import sys
 sys.path.append('../')
 from models.model import SiameseNetwork
-from data_processing import DataAug
+from data_processing.augmentations import DataAug
 
 class Experiment():
     def __init__(self, config) -> None:
