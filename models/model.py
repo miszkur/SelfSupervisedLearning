@@ -48,7 +48,7 @@ class SiameseNetwork(tf.keras.Model):
         x_norm = tfm.l2_normalize(x, axis=-1)
         y_norm = tfm.l2_normalize(y, axis=-1)
         output = (x_norm - y_norm) ** 2
-        return tfm.reduce_sum(output, axis=-1)
+        return tfm.reduce_sum(output)
 
     @tf.function
     def loss(self, x, x_aug, y, y_aug):
