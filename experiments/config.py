@@ -12,6 +12,7 @@ def basic_config():
     config.optimizer_params = optimizer_params
     # EMA momentum for target network.
     config.tau = 0.996
+    config.lambda_ = 0.8
     config.eigenspace_experiment = False 
     return config
     

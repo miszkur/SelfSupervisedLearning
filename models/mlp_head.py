@@ -12,7 +12,7 @@ class MLPHead(tfkl.Layer):
 
         if self.hidden_size is not None:
             self.hidden_layer = tfkl.Dense(
-                output_size, 
+                hidden_size, 
                 use_bias=True
                 )
             # center and scale are set differently in Byol and DiretPred paper
