@@ -82,7 +82,7 @@ class DataAugCifar10(tfkl.Layer):
             x = tf.image.random_contrast(x,lower=0.4,upper=0.4)
             x = tf.image.random_saturation(x,lower=0.4,upper=0.4)
             x = tf.image.random_hue(x,max_delta=0.1)
-            x = tf.clip_by_value(x,0,1)
+            x = tf.clip_by_value(x,-1,1)
 
         if random.random() < 0.2:
             x = tf.image.rgb_to_grayscale(x)
