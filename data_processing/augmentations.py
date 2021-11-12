@@ -53,7 +53,7 @@ class DataAug(tfkl.Layer):
     the target size of 224 × 224 using bicubic interpolation.
     """
 
-    def __init__(self, width, height) -> None:
+    def __init__(self, width=224, height=224) -> None:
         super(DataAug, self).__init__()
         self.width = width
         self.height = height

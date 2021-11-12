@@ -10,6 +10,7 @@ class MLPHead(tfkl.Layer):
         super(MLPHead, self).__init__()
 
         self.hidden_size = hidden_size
+        self.wp = None
 
         if self.hidden_size is not None:
             self.hidden_layer = tfkl.Dense(
@@ -30,9 +31,20 @@ class MLPHead(tfkl.Layer):
             use_bias=False
             )
 
+    def get_wp(self):
+        return self.wp
+
+    def update_wp(self):
+        w1 = self.hidden_layer.get_weights()[0]
+        w2 = self.output_layer.get_weights()[0]
+        self.wp = tf.matmul(w1,w2)
+        self.wp = tf.transpose(self.wp)
+
     def symmetry(self):
-        w = self.output_layer.get_weights()[0]
-        return np.sum(np.abs(w-w.T))/np.sum(np.abs(w))
+        return tf.math.reduce_sum(
+            tf.math.abs(
+                self.wp-tf.transpose(self.wp)
+            )) / tf.math.reduce_sum(tf.math.abs(self.wp))
 
     def call(self, x):
         if self.hidden_size is not None:

@@ -7,6 +7,7 @@ import numpy as np
 import sys
 sys.path.append('../')
 from models.model import SiameseNetwork
+from data_processing import DataAug
 
 class Experiment():
     def __init__(self, config) -> None:
@@ -21,14 +22,12 @@ class Experiment():
         self.F_eigenval = []
         self.wp_eigenval = []
         self.allignment = []
+        self.symmetry = []
+        self.data_aug = DataAug()
         self.cosine_sim = tf.keras.losses.CosineSimilarity(
             axis=0,
             reduction=tf.keras.losses.Reduction.NONE
             )
-
-    def augment(self, x):
-        x_aug = tfa.image.gaussian_filter2d(x)
-        return x_aug
 
     def update_target_network(self, tau):
 
@@ -58,8 +57,19 @@ class Experiment():
             x_aug, projector_output_aug = self.online_network(input_aug)
             y_aug = tf.stop_gradient(y_aug)
             loss_value = self.online_network.loss(x, x_aug, y, y_aug)
-        return loss_value, tape.gradient(
-            loss_value, self.online_network.model.trainable_variables), projector_output, projector_output_aug
+        return (
+            loss_value, tape.gradient(
+            loss_value, self.online_network.model.trainable_variables), 
+            projector_output, 
+            projector_output_aug
+        )
+
+
+    def cosine_similarity(self, x, y):
+        x = tf.math.l2_normalize(x, axis=0)
+        y = tf.math.l2_normalize(y, axis=0)
+        xy = tf.multiply(x, y)
+        return tf.math.reduce_sum(xy, axis=0)
 
     def train(
         self, 
@@ -68,7 +78,7 @@ class Experiment():
         epochs=100,  
         show_history=True):
 
-        # Create target network and initialize F.
+        # Create target network.
         for x in ds.take(1):
             self.online_network(x)
             self.target_network(x)
@@ -80,34 +90,10 @@ class Experiment():
             for x in tqdm(ds):
 
                 # Optimize the model
-                x_aug = self.augment(x)
+                x_aug = self.data_aug(x)
                 loss_value, grads, h1, h2 = self.grad(x, x_aug)
                 self.online_network.model.optimizer.apply_gradients(
                     zip(grads, self.online_network.model.trainable_variables))
-                
-
-                # Eignespace alignment experiment
-                if self.eigenspace_experiment:
-                    # get F
-                    corr_1 = tf.matmul(tf.expand_dims(h1, 2), tf.expand_dims(h1, 1))
-                    corr_2 = tf.matmul(tf.expand_dims(h2, 2), tf.expand_dims(h2, 1))
-                    corr = tf.concat([corr_1, corr_2], axis=0)
-                    corr = tf.reduce_mean(corr, axis=0) # check the axis
-                    self.update_f(corr)
-                    eigval, eigvec = tf.linalg.eigh(self.F)
-                    self.F_eigenval.append(eigval)
-
-                    # get predictor head
-                    w1 = self.online_network.predictor.hidden_layer.get_weights()[0]
-                    w2 = self.online_network.predictor.output_layer.get_weights()[0]
-                    wp = (w1 @ w2).T
-                    wp = tf.constant(wp)
-                    wp_eigval = tf.linalg.eigvals(wp)
-                    wp_eigval = tf.math.real(wp_eigval)
-                    self.wp_eigenval.append(wp_eigval)
-                    wp_v = wp @ eigvec
-                    cosine = self.cosine_sim(eigvec, wp_v)
-                    self.allignment.append(cosine)
 
                 # Update target network
                 self.update_target_network(self.tau)
@@ -121,6 +107,30 @@ class Experiment():
             if epoch % 1 == 0:
                 print("Epoch {:03d}: Loss: {:.3f}".format(
                     epoch, epoch_loss_avg.result()))
+
+            # Eignespace alignment experiment
+            if self.eigenspace_experiment and epoch % 5 == 0:
+                # get F
+                corr_1 = tf.matmul(tf.expand_dims(h1, 2), tf.expand_dims(h1, 1))
+                corr_2 = tf.matmul(tf.expand_dims(h2, 2), tf.expand_dims(h2, 1))
+                corr = tf.concat([corr_1, corr_2], axis=0)
+                corr = tf.reduce_mean(corr, axis=0)
+                self.update_f(corr)
+                eigval, eigvec = tf.linalg.eigh(self.F)
+                self.F_eigenval.append(eigval)
+
+                # get predictor head
+                self.online_network.predictor.update_wp()
+                wp = self.online_network.predictor.get_wp()
+                self.symmetry.append(
+                    self.online_network.predictor.symmetry())
+                wp_eigval = tf.linalg.eigvals(wp)
+                wp_eigval = tf.math.real(wp_eigval)
+                self.wp_eigenval.append(wp_eigval)
+
+                wp_v = tf.matmul(wp, eigvec)
+                cosine = self.cosine_sim(eigvec, wp_v)
+                self.allignment.append(cosine)
 
         self.online_network.save_model(save_path)
 

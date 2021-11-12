@@ -19,18 +19,18 @@ def get_cifar10(
 
     Args:
         split (str, required): defines subset of STL10 to get. Possible options:
-        'train', 'unlabelled', 'test'.
+        'train', 'test'.
         batch_size (int, optional): Size of batches. Defaults to 128.
         include_labels (bool, optional): If true output dataset consists of 
         tuples (image, label), otherwise it only includes only labels. 
         Defaults to False.
 
     Returns:
-        Dataset: preprocessed STL10
+        Dataset: preprocessed CIFAR10
     """
 
     ds, ds_info = tfds.load(
-        'stl10', split=split, with_info=True, as_supervised=True)
+        'cifar10', split=split, with_info=True, as_supervised=True)
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
     ds = ds.map(resize_to_resnet_input,  num_parallel_calls=tf.data.AUTOTUNE)
     # Map to return only images:
