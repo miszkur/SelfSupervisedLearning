@@ -99,6 +99,13 @@ class Experiment():
                 # Update target network
                 self.update_target_network(self.tau)
 
+                if self.eigenspace_experiment:
+                    corr_1 = tf.matmul(tf.expand_dims(h1, 2), tf.expand_dims(h1, 1))
+                    corr_2 = tf.matmul(tf.expand_dims(h2, 2), tf.expand_dims(h2, 1))
+                    corr = tf.concat([corr_1, corr_2], axis=0)
+                    corr = tf.reduce_mean(corr, axis=0)
+                    self.update_f(corr)
+
                 # Track progress
                 epoch_loss_avg.update_state(loss_value)  
 
@@ -112,11 +119,6 @@ class Experiment():
             # Eignespace alignment experiment
             if self.eigenspace_experiment and epoch % 5 == 0:
                 # get F
-                corr_1 = tf.matmul(tf.expand_dims(h1, 2), tf.expand_dims(h1, 1))
-                corr_2 = tf.matmul(tf.expand_dims(h2, 2), tf.expand_dims(h2, 1))
-                corr = tf.concat([corr_1, corr_2], axis=0)
-                corr = tf.reduce_mean(corr, axis=0)
-                self.update_f(corr)
                 eigval, eigvec = tf.linalg.eigh(self.F)
                 self.F_eigenval.append(eigval)
 
