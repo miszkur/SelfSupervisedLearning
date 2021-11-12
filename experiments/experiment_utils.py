@@ -107,6 +107,7 @@ class Experiment():
                     self.update_f(corr)
 
                 # Track progress
+                print(f'Loss: {loss_value}')
                 epoch_loss_avg.update_state(loss_value)  
 
             # End epoch
