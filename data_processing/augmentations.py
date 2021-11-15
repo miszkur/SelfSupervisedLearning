@@ -79,9 +79,9 @@ class DataAugCifar10(tfkl.Layer):
 
         if random.random() < 0.8:
             x = tf.image.random_brightness(x,max_delta=0.4)
-            x = tf.image.random_contrast(x,lower=0.4,upper=0.4)
-            x = tf.image.random_saturation(x,lower=0.4,upper=0.4)
-            x = tf.image.random_hue(x,max_delta=0.1)
+            x = tf.image.adjust_contrast(x, contrast=0.4)
+            x = tf.image.adjust_saturation(x, 0.4)
+            x = tf.image.random_hue(x, max_delta=0.1)
             x = tf.clip_by_value(x,-1,1)
 
         if random.random() < 0.2:
