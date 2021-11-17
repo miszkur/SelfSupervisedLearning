@@ -40,7 +40,7 @@ class Experiment():
         target = self.target_network.projector.get_weights()
         online = self.online_network.projector.get_weights()
         weights = [x + (1 - tau) * (y - x) for x, y in zip(target, online)]
-        self.online_network.projector.set_weights(weights)
+        self.target_network.projector.set_weights(weights)
 
     def update_f(self, corr):
         if self.F is None:
