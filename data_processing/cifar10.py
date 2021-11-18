@@ -5,8 +5,7 @@ from typing import Tuple
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
     # TODO: Check if per_image_standarization is needed.
-    return (
-        tf.image.per_image_standardization(tf.cast(image, tf.float32) / 255.),
+    return ((tf.cast(image, tf.float32) / 255.),
         label)
 
 def resize_to_resnet_input(image, label):

@@ -61,7 +61,7 @@ class DataAugCifar10(tfkl.Layer):
 
     def call(self, x, s=1.0, batch_size=128):
         new_area = tf.random.uniform(
-            [], 0.08, 1.0, dtype=tf.float32) * self.current_area
+            [], 0.8, 1.0, dtype=tf.float32) * self.current_area
         min_ratio = tf.math.log(3 / 4)
         max_ratio = tf.math.log(4 / 3)
         aspect_ratio = tf.math.exp(tf.random.uniform(
@@ -77,14 +77,14 @@ class DataAugCifar10(tfkl.Layer):
         x = tf.image.random_crop(x, size=[batch_size, h, w, 3]) 
         x = tf.image.resize(x, [224, 224], method='bicubic')
 
-        if random.random() < 0.8:
+        if tf.random.uniform([1], minval=0.0, maxval=1.0) < 0.8:
             x = tf.image.random_brightness(x,max_delta=0.4)
             x = tf.image.adjust_contrast(x, 0.4)
             x = tf.image.adjust_saturation(x, 0.4)
             x = tf.image.random_hue(x, max_delta=0.1)
-            x = tf.clip_by_value(x,-1,1)
+            x = tf.clip_by_value(x,0,1)
 
-        if random.random() < 0.2:
+        if tf.random.uniform([1], minval=0.0, maxval=1.0) < 0.2:
             x = tf.repeat(tf.image.rgb_to_grayscale(x), 3, axis=-1)
 
         return x
