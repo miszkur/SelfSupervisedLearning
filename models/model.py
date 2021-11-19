@@ -4,15 +4,16 @@ from tensorflow.python.ops.nn_impl import moments
 import tensorflow_addons as tfa
 from models.resnet18 import ResNet18
 from models.mlp_head import MLPHead
+from typing import Tuple
 import matplotlib.pyplot as plt
 tfk = tf.keras
 tfkl = tfk.layers
 tfm = tf.math
 
 class SiameseNetwork(tf.keras.Model):
-    def __init__(self, target=False, image_size=224):
+    def __init__(self, image_size: Tuple[int], target=False):
         super(SiameseNetwork, self).__init__()
-        self.encoder = ResNet18()
+        self.encoder = ResNet18(image_size)
         self.projector = MLPHead()
         self.target = target
         if not self.target:

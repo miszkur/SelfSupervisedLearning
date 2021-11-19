@@ -14,6 +14,7 @@ def basic_config():
     config.tau = 0.996
     config.lambda_ = 0.8
     config.eigenspace_experiment = False 
+    config.image_size = (32, 32) # CIFAR10 size.
     return config
     
 def get_byol():

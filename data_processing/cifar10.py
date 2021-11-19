@@ -8,10 +8,6 @@ def normalize_img(image, label):
     return ((tf.cast(image, tf.float32) / 255.),
         label)
 
-def resize_to_resnet_input(image, label):
-    """Resizes images to resnet compatible size (224x224)."""
-    return tf.image.resize(image, [224, 224]), label
-
 def get_cifar10(
     split: str, 
     batch_size=128, 
@@ -33,7 +29,6 @@ def get_cifar10(
     ds, ds_info = tfds.load(
         'cifar10', split=split, with_info=True, as_supervised=True)
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
-    ds = ds.map(resize_to_resnet_input,  num_parallel_calls=tf.data.AUTOTUNE)
     # Map to return only images:
     if not include_labels:
         ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)

@@ -8,13 +8,13 @@ import numpy as np
 import sys
 sys.path.append('../')
 from models.model import SiameseNetwork
-from data_processing.augmentations import DataAug, DataAugCifar10
+from data_processing.augmentations import DataAug, DataAugSmall
 
 class Experiment():
     def __init__(self, config) -> None:
-        self.online_network = SiameseNetwork()
+        self.online_network = SiameseNetwork(image_size=config.image_size)
         self.online_network.compile(config.optimizer_params)
-        self.target_network = SiameseNetwork(target=True)
+        self.target_network = SiameseNetwork(target=True, image_size=config.image_size)
         self.target_network.compile(config.optimizer_params)
         self.tau = config.tau
         self.lambda_ = config.lambda_
@@ -24,7 +24,11 @@ class Experiment():
         self.wp_eigenval = []
         self.allignment = []
         self.symmetry = []
-        self.data_aug = DataAugCifar10(batch_size=config.batch_size)
+        if config.image_size == (32, 32):
+            self.data_aug = DataAugSmall(batch_size=config.batch_size)
+        else:
+            self.data_aug = DataAug(batch_size=config.batch_size)
+
         self.cosine_sim = tf.keras.losses.CosineSimilarity(
             axis=0,
             reduction=tf.keras.losses.Reduction.NONE
