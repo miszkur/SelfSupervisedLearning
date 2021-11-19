@@ -1,6 +1,7 @@
 import tensorflow as tf
 from tensorflow.python.eager.def_function import run_functions_eagerly
 from tensorflow.python.ops.nn_impl import moments
+import tensorflow_addons as tfa
 from models.resnet18 import ResNet18
 from models.mlp_head import MLPHead
 import matplotlib.pyplot as plt
@@ -35,14 +36,15 @@ class SiameseNetwork(tf.keras.Model):
         y = self.predictor(projection)
         return tfk.models.Model(inputs=input, outputs=(y, projection))
 
-    def call(self, x):
-        y = self.model.call(x)
+    def call(self, x, training=False):
+        y = self.model.call(x, training=False)
         return y
 
     def compile(self, config):
-        optimizer = tfk.optimizers.SGD(
+        optimizer = tfa.optimizers.SGDW(
             learning_rate = config.lr, 
-            momentum = config.momentum)
+            momentum = config.momentum,
+            weight_decay = config.weight_decay)
         self.optimizer = optimizer
         self.model.compile(optimizer=optimizer, loss=[self.loss])
 

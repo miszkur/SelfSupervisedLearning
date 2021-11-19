@@ -21,8 +21,7 @@ class MLPHead(tfkl.Layer):
             self.batch_norm = tfkl.BatchNormalization(
                 momentum=0.9, 
                 epsilon=1e-5, 
-                center=False, 
-                scale=False
+                center=False # diables beta, in DirectPred affine=False for projector
                 )
             self.relu = tf.nn.relu
 
@@ -46,10 +45,10 @@ class MLPHead(tfkl.Layer):
                 self.wp-tf.transpose(self.wp)
             )) / tf.math.reduce_sum(tf.math.abs(self.wp))
 
-    def call(self, x):
+    def call(self, x, training=None):
         if self.hidden_size is not None:
             x = self.hidden_layer(x)
-            x = self.batch_norm(x)
+            x = self.batch_norm(x, training=training)
             x = self.relu(x)
         
         y = self.output_layer(x)
