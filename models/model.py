@@ -11,13 +11,13 @@ tfkl = tfk.layers
 tfm = tf.math
 
 class SiameseNetwork(tf.keras.Model):
-    def __init__(self, image_size: Tuple[int], target=False):
+    def __init__(self, image_size: Tuple[int], target=False, predictor_hidden_size=None):
         super(SiameseNetwork, self).__init__()
         self.encoder = ResNet18(image_size)
         self.projector = MLPHead()
         self.target = target
         if not self.target:
-            self.predictor = MLPHead()
+            self.predictor = MLPHead(hidden_size=predictor_hidden_size)
         self.flatten = tfkl.Flatten()
         self.image_size = image_size
         self.model = self.build_model()
@@ -27,7 +27,7 @@ class SiameseNetwork(tf.keras.Model):
         )
     
     def build_model(self):
-        input = tf.keras.layers.Input(shape=(self.image_size, self.image_size, 3))
+        input = tf.keras.layers.Input(shape=(self.image_size[0], self.image_size[1], 3))
         x = self.encoder(input)
         x = self.flatten(x)
         projection = self.projector(x)

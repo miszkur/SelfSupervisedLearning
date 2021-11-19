@@ -39,6 +39,37 @@ class MLPHead(tfkl.Layer):
         self.wp = tf.matmul(w1,w2)
         self.wp = tf.transpose(self.wp)
 
+    def update_predictor(self, F, eps, method):
+        # TODO runs, but check if correct
+        assert self.hidden_size is None, \
+            'Predictor in DirectPred should have 1 layer!'
+
+        if method == 'DirectPred':
+            eigval, eigvec = tf.linalg.eigh(F)
+            eigval = tf.math.real(eigval)
+            max_eigval = tf.math.reduce_max(eigval)
+            eigval = tf.divide(eigval, max_eigval)
+            eigval = tf.clip_by_value(
+                eigval, 
+                clip_value_min=0, 
+                clip_value_max=max_eigval
+                )
+            
+            p = tf.math.pow(eigval, 0.5) + eps
+            p = tf.clip_by_value(
+                p, 
+                clip_value_min=1e-4, 
+                clip_value_max=tf.math.reduce_max(p)
+                )
+            p_diag = tf.linalg.diag(p)
+            w = tf.matmul(eigvec, p_diag)
+            w = tf.matmul(w, eigvec, transpose_b=True)
+        elif method == 'DirectCopy':
+            pass
+
+        self.output_layer.set_weights([w])
+        
+        
     def symmetry(self):
         return tf.math.reduce_sum(
             tf.math.abs(

@@ -12,18 +12,26 @@ from data_processing.augmentations import DataAug, DataAugSmall
 
 class Experiment():
     def __init__(self, config) -> None:
-        self.online_network = SiameseNetwork(image_size=config.image_size)
+        self.online_network = SiameseNetwork(
+            image_size=config.image_size, 
+            predictor_hidden_size=config.predictor_hidden_size)
         self.online_network.compile(config.optimizer_params)
+
         self.target_network = SiameseNetwork(target=True, image_size=config.image_size)
         self.target_network.compile(config.optimizer_params)
+
+        self.name = config.name
         self.tau = config.tau
         self.lambda_ = config.lambda_
+        self.eps = config.eps
         self.eigenspace_experiment = config.eigenspace_experiment
         self.F = None
         self.F_eigenval = []
         self.wp_eigenval = []
         self.allignment = []
         self.symmetry = []
+        self.should_compute_F = self.eigenspace_experiment or self.name == 'DirectPred'
+        
         if config.image_size == (32, 32):
             self.data_aug = DataAugSmall(batch_size=config.batch_size)
         else:
@@ -113,12 +121,19 @@ class Experiment():
                 # Update target network
                 self.update_target_network(self.tau)
 
-                if self.eigenspace_experiment:
+                if self.should_compute_F:
                     corr_1 = tf.matmul(tf.expand_dims(h1, 2), tf.expand_dims(h1, 1))
                     corr_2 = tf.matmul(tf.expand_dims(h2, 2), tf.expand_dims(h2, 1))
                     corr = tf.concat([corr_1, corr_2], axis=0)
                     corr = tf.reduce_mean(corr, axis=0)
                     self.update_f(corr)
+
+                    if self.name == 'DirectPred':
+                        self.online_network.predictor.update_predictor(
+                            F=self.F, 
+                            eps=self.eps,
+                            method=self.name
+                            )
 
                 # Track progress
                 print(f'Loss: {loss_value}')
@@ -133,7 +148,7 @@ class Experiment():
 
             # Eignespace alignment experiment
             if self.eigenspace_experiment and epoch % 5 == 0:
-                # get F
+                # get F eignvalues
                 eigval, eigvec = tf.linalg.eigh(self.F)
                 self.F_eigenval.append(eigval)
 

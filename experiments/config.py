@@ -5,6 +5,7 @@ def basic_config():
     config = ml_collections.ConfigDict()
     config.num_classes = 10
     config.batch_size = 128
+    config.predictor_hidden_size  = 512
     optimizer_params = ml_collections.ConfigDict()
     optimizer_params.lr = 0.03
     optimizer_params.momentum = 0.9
@@ -38,5 +39,7 @@ def get_direct_pred():
     """Returns DirectPred configuration."""
     config = basic_config()
     config.name = 'DirectPred'
+    config.eps = 0.0 # TODO: this might not be necessary, DirectPred has it like this
+    config.predictor_hidden_size = None
     return config
 
