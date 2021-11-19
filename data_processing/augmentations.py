@@ -53,13 +53,27 @@ class DataAugCifar10(tfkl.Layer):
     the target size of 224 × 224 using bicubic interpolation.
     """
 
-    def __init__(self, width=224, height=224) -> None:
+    def __init__(self, width=224, height=224, batch_size=128) -> None:
         super(DataAugCifar10, self).__init__()
         self.width = width
         self.height = height
         self.current_area = self.width * self.height
+        self.batch_size = batch_size
+        # Variance of CIFAR10 for each channel.
+        var = tf.constant([0.2023, 0.1994, 0.2010])
+        var = tf.reshape(var, shape=[1,1,1,3])
+        var = tf.repeat(var,axis=0,repeats=batch_size)
+        var = tf.repeat(var,axis=1,repeats=width)
+        self.var = tf.repeat(var,axis=2,repeats=height)
+        # Mean of CIFAR10 for each channel.
+        self.mean = tf.constant([0.4914, 0.4822, 0.4465])
 
-    def call(self, x, s=1.0, batch_size=128):
+    def normalize(self, x):
+        x = tf.math.subtract(x, self.mean)
+        x = tf.math.divide(x, self.var)
+        return x
+
+    def call(self, x, s=1.0, ):
         new_area = tf.random.uniform(
             [], 0.8, 1.0, dtype=tf.float32) * self.current_area
         min_ratio = tf.math.log(3 / 4)
@@ -74,7 +88,7 @@ class DataAugCifar10(tfkl.Layer):
         h = tf.minimum(h, self.height)
 
         x = tf.image.random_flip_left_right(x)
-        x = tf.image.random_crop(x, size=[batch_size, h, w, 3]) 
+        x = tf.image.random_crop(x, size=[self.batch_size, h, w, 3]) 
         x = tf.image.resize(x, [224, 224], method='bicubic')
 
         if tf.random.uniform([1], minval=0.0, maxval=1.0) < 0.8:
@@ -82,11 +96,11 @@ class DataAugCifar10(tfkl.Layer):
             x = tf.image.adjust_contrast(x, 0.4)
             x = tf.image.adjust_saturation(x, 0.4)
             x = tf.image.random_hue(x, max_delta=0.1)
-            x = tf.clip_by_value(x,0,1)
+            # x = tf.clip_by_value(x,0,1)
 
         if tf.random.uniform([1], minval=0.0, maxval=1.0) < 0.2:
             x = tf.repeat(tf.image.rgb_to_grayscale(x), 3, axis=-1)
-
+        x = self.normalize(x)
         return x
 
 

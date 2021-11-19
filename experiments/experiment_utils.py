@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.python.keras.backend import dtype
+from tensorflow.python.ops.gen_batch_ops import batch
 import tensorflow_addons as tfa 
 from tqdm import tqdm
 import numpy as np
@@ -17,14 +18,13 @@ class Experiment():
         self.target_network.compile(config.optimizer_params)
         self.tau = config.tau
         self.lambda_ = config.lambda_
-        self.batch_size = config.batch_size
         self.eigenspace_experiment = config.eigenspace_experiment
         self.F = None
         self.F_eigenval = []
         self.wp_eigenval = []
         self.allignment = []
         self.symmetry = []
-        self.data_aug = DataAugCifar10()
+        self.data_aug = DataAugCifar10(batch_size=config.batch_size)
         self.cosine_sim = tf.keras.losses.CosineSimilarity(
             axis=0,
             reduction=tf.keras.losses.Reduction.NONE
@@ -91,8 +91,8 @@ class Experiment():
             for x in tqdm(ds):
 
                 # Optimize the model
-                x_aug1 = self.data_aug(x, batch_size=self.batch_size)
-                x_aug2 = self.data_aug(x, batch_size=self.batch_size)
+                x_aug1 = self.data_aug(x)
+                x_aug2 = self.data_aug(x)
                 loss_value, grads, h1, h2 = self.grad(x_aug1, x_aug2)
                 self.online_network.model.optimizer.apply_gradients(
                     zip(grads, self.online_network.model.trainable_variables))
