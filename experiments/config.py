@@ -39,7 +39,7 @@ def get_direct_pred():
     """Returns DirectPred configuration."""
     config = basic_config()
     config.name = 'DirectPred'
-    config.eps = 0.0 # TODO: this might not be necessary, DirectPred has it like this
+    # config.eps = 0.0 # TODO: this might not be necessary, DirectPred has it like this
     config.predictor_hidden_size = None
     return config
 

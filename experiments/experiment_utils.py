@@ -4,6 +4,8 @@ from tensorflow.python.ops.gen_batch_ops import batch
 import tensorflow_addons as tfa 
 from tqdm import tqdm
 import numpy as np
+import pickle
+import os
 
 import sys
 sys.path.append('../')
@@ -23,7 +25,6 @@ class Experiment():
         self.name = config.name
         self.tau = config.tau
         self.lambda_ = config.lambda_
-        self.eps = config.eps
         self.eigenspace_experiment = config.eigenspace_experiment
         self.F = None
         self.F_eigenval = []
@@ -131,12 +132,11 @@ class Experiment():
                     if self.name == 'DirectPred':
                         self.online_network.predictor.update_predictor(
                             F=self.F, 
-                            eps=self.eps,
+                            eps=0.0,
                             method=self.name
                             )
 
                 # Track progress
-                print(f'Loss: {loss_value}')
                 epoch_loss_avg.update_state(loss_value)  
 
             # End epoch
@@ -166,4 +166,17 @@ class Experiment():
                 self.allignment.append(cosine)
 
         self.online_network.save_model(save_path)
+
+        if self.eigenspace_experiment:
+            self.save_eigenspace_experiment_results('results_eigenspace')
+
+    def save_eigenspace_experiment_results(self, path):
+        with open(os.path.join(path, 'F_eigenval.pkl'), 'wb') as f:
+            pickle.dump(self.F_eigenval, f)
+        with open(os.path.join(path, 'wp_eigenval.pkl'), 'wb') as f:
+            pickle.dump(self.wp_eigenval, f)
+        with open(os.path.join(path, 'allignment.pkl'), 'wb') as f:
+            pickle.dump(self.allignment, f)
+        with open(os.path.join(path, 'symmetry.pkl'), 'wb') as f:
+            pickle.dump(self.symmetry, f)
 
