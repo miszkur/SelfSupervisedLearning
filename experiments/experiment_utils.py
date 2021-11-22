@@ -23,7 +23,7 @@ class Experiment():
         self.name = config.name
         self.tau = config.tau
         self.lambda_ = config.lambda_
-        self.eps = config.eps
+        self.eps = 0.0#config.eps
         self.eigenspace_experiment = config.eigenspace_experiment
         self.F = None
         self.F_eigenval = []
@@ -160,6 +160,8 @@ class Experiment():
                 wp_eigval = tf.linalg.eigvals(wp)
                 wp_eigval = tf.math.real(wp_eigval)
                 self.wp_eigenval.append(wp_eigval)
+                
+                self.online_network.predictor.symmetry_reg()
 
                 wp_v = tf.matmul(wp, eigvec)
                 cosine = self.cosine_sim(eigvec, wp_v)

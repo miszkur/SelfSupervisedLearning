@@ -39,6 +39,19 @@ class MLPHead(tfkl.Layer):
         self.wp = tf.matmul(w1,w2)
         self.wp = tf.transpose(self.wp)
 
+    def symmetry_reg(self,layers=2):
+        if layers == 2:
+            w1 = self.hidden_layer.get_weights()[0]
+            w1b = self.hidden_layer.get_weights()[1]
+            w2 = self.output_layer.get_weights()[0]
+            w = (w1+tf.transpose(w2))/2
+            # self.hidden_layer.set_weights([w,[w1b]]) #Not working, complaining about weights.
+            self.output_layer.set_weights([tf.transpose(w)]) #This works
+        else:
+            w = self.output_layer.get_weights()[0]
+            wn = (w + tf.transpose(w))/2
+            self.output_layer.set_weights([wn])
+
     def update_predictor(self, F, eps, method):
         # TODO runs, but check if correct
         assert self.hidden_size is None, \
