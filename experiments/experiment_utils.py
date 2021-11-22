@@ -26,12 +26,13 @@ class Experiment():
         self.tau = config.tau
         self.lambda_ = config.lambda_
         self.eigenspace_experiment = config.eigenspace_experiment
+        self.eps = config.eps
         self.F = None
         self.F_eigenval = []
         self.wp_eigenval = []
         self.allignment = []
         self.symmetry = []
-        self.should_compute_F = self.eigenspace_experiment or self.name == 'DirectPred'
+        self.should_compute_F = self.eigenspace_experiment or self.name in ['DirectPred', 'DirectCopy']
         
         if config.image_size == (32, 32):
             self.data_aug = DataAugSmall(batch_size=config.batch_size)
@@ -129,10 +130,10 @@ class Experiment():
                     corr = tf.reduce_mean(corr, axis=0)
                     self.update_f(corr)
 
-                    if self.name == 'DirectPred':
+                    if self.name in ['DirectPred', 'DirectCopy']:
                         self.online_network.predictor.update_predictor(
-                            F=self.F, 
-                            eps=0.0,
+                            F_=self.F, 
+                            eps=self.eps,
                             method=self.name
                             )
 

@@ -52,8 +52,9 @@ class MLPHead(tfkl.Layer):
             wn = (w + tf.transpose(w))/2
             self.output_layer.set_weights([wn])
 
-    def update_predictor(self, F, eps, method):
-        # TODO runs, but check if correct
+    def update_predictor(self, F_, eps, method):
+        # TODO runs, but check if both are correct
+        F = tf.identity(F_)
         assert self.hidden_size is None, \
             'Predictor in DirectPred should have 1 layer!'
 
@@ -77,8 +78,13 @@ class MLPHead(tfkl.Layer):
             p_diag = tf.linalg.diag(p)
             w = tf.matmul(eigvec, p_diag)
             w = tf.matmul(w, eigvec, transpose_b=True)
+
         elif method == 'DirectCopy':
-            pass
+            # TODO: should we normalize? It is stated in the paper but not in the code
+            # TODO: also, which norm should we use
+            F = tf.linalg.normalize(F, ord='fro', axis=[0,1])[0]
+            n, _ = F.shape
+            w = F + eps * tf.eye((n))
 
         self.output_layer.set_weights([w])
         
