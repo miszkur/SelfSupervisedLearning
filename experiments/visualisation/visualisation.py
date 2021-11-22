@@ -71,7 +71,6 @@ def eigenvalues_F(eigv_F):
         else:
             plt.plot(data, color=colors[i])
 
-    plt.ylim((-0.5, 1))
     plt.xlabel('Sorted eigenvalue index')
     plt.ylabel(r'$\log$ eigenvalue of $F$')
     plt.title(r'Evolvement of eigenvalues $s_j$ of $F$')
