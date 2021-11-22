@@ -160,6 +160,8 @@ class Experiment():
                 wp_eigval = tf.linalg.eigvals(wp)
                 wp_eigval = tf.math.real(wp_eigval)
                 self.wp_eigenval.append(wp_eigval)
+                
+                self.online_network.predictor.symmetry_reg()
 
                 wp_v = tf.matmul(wp, eigvec)
                 cosine = self.cosine_sim(eigvec, wp_v)
