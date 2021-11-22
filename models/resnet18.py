@@ -1,3 +1,4 @@
+from typing import Tuple
 import tensorflow as tf
 
 
@@ -49,13 +50,23 @@ def make_basic_block_layer(filter_num, blocks, stride=1):
 
 
 class ResNet18(tf.keras.Model):
-    def __init__(self):
+    """"""
+    def __init__(self, image_size: Tuple[int]):
         super(ResNet18, self).__init__()
+        self.image_size = image_size
+        # Smaller kernel size in conv2d and no max pooling according to SimCLR 
+        # paper (Appendix B.9), see: https://arxiv.org/pdf/2002.05709.pdf
+        if image_size == (32, 32):
+            self.conv1 = tf.keras.layers.Conv2D(filters=64,
+                                                kernel_size=(3,3),
+                                                strides=1,
+                                                padding="same")
+        else: 
+            self.conv1 = tf.keras.layers.Conv2D(filters=64,
+                                    kernel_size=(7, 7),
+                                    strides=2,
+                                    padding="same")
 
-        self.conv1 = tf.keras.layers.Conv2D(filters=64,
-                                            kernel_size=(7, 7),
-                                            strides=2,
-                                            padding="same")
         self.bn1 = tf.keras.layers.BatchNormalization()
         self.pool1 = tf.keras.layers.MaxPool2D(pool_size=(3, 3),
                                                strides=2,
@@ -79,7 +90,8 @@ class ResNet18(tf.keras.Model):
         x = self.conv1(inputs)
         x = self.bn1(x, training=training)
         x = tf.nn.relu(x)
-        x = self.pool1(x)
+        if self.image_size != (32, 32):
+            x = self.pool1(x)
         x = self.layer1(x, training=training)
         x = self.layer2(x, training=training)
         x = self.layer3(x, training=training)

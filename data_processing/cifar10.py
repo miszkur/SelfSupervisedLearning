@@ -3,15 +3,12 @@ import tensorflow_datasets as tfds
 from typing import Tuple
 
 def normalize_img(image, label):
-  """Normalizes images: `uint8` -> `float32`."""
-  return tf.cast(image, tf.float32) / 255., label
+    """Normalizes images: `uint8` -> `float32`."""
+    # TODO: Check if per_image_standarization is needed.
+    return ((tf.cast(image, tf.float32) / 255.),
+        label)
 
-
-def resize_to_resnet_input(image, label):
-    """Resizes images to resnet compatible size (224x224)."""
-    return tf.image.resize(image, [224, 224]), label
-
-def get_stl10(
+def get_cifar10(
     split: str, 
     batch_size=128, 
     include_labels=False) -> Tuple[tf.data.Dataset, int]:
@@ -19,20 +16,19 @@ def get_stl10(
 
     Args:
         split (str, required): defines subset of STL10 to get. Possible options:
-        'train', 'unlabelled', 'test'.
+        'train', 'test'.
         batch_size (int, optional): Size of batches. Defaults to 128.
         include_labels (bool, optional): If true output dataset consists of 
         tuples (image, label), otherwise it only includes only labels. 
         Defaults to False.
 
     Returns:
-        Dataset: preprocessed STL10
+        Dataset: preprocessed CIFAR10
     """
 
     ds, ds_info = tfds.load(
-        'stl10', split=split, with_info=True, as_supervised=True)
+        'cifar10', split=split, with_info=True, as_supervised=True)
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
-    ds = ds.map(resize_to_resnet_input,  num_parallel_calls=tf.data.AUTOTUNE)
     # Map to return only images:
     if not include_labels:
         ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
