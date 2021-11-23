@@ -41,12 +41,13 @@ class MLPHead(tfkl.Layer):
 
     def symmetry_reg(self,layers=2):
         if layers == 2:
-            w1 = self.hidden_layer.get_weights()[0]
-            w1b = self.hidden_layer.get_weights()[1]
+            wn = self.hidden_layer.get_weights()
+            w1 = wn[0]
             w2 = self.output_layer.get_weights()[0]
             w = (w1+tf.transpose(w2))/2
-            # self.hidden_layer.set_weights([w,[w1b]]) #Not working, complaining about weights.
-            self.output_layer.set_weights([tf.transpose(w)]) #This works
+            wn[0] = w
+            self.hidden_layer.set_weights(wn)
+            self.output_layer.set_weights([tf.transpose(w)])
         else:
             w = self.output_layer.get_weights()[0]
             wn = (w + tf.transpose(w))/2
