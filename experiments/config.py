@@ -14,6 +14,7 @@ def basic_config():
     # EMA momentum for target network.
     config.tau = 0.996
     config.lambda_ = 0.8
+    config.symmetry_reg = False
     config.eigenspace_experiment = False 
     config.image_size = (32, 32) # CIFAR10 size.
     config.eps = 0.0
@@ -28,6 +29,12 @@ def get_byol():
 def get_eigenspace_experiment():
     config = get_byol()
     config.eigenspace_experiment = True
+    return config
+
+def get_eigenspace_experiment_with_symmetry():
+    config = get_byol()
+    config.eigenspace_experiment = True
+    config.symmetry_reg = True
     return config
 
 def get_simsiam():
