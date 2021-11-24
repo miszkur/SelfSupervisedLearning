@@ -41,19 +41,21 @@ class MLPHead(tfkl.Layer):
 
     def symmetry_reg(self,layers=2):
         if layers == 2:
-            w1 = self.hidden_layer.get_weights()[0]
-            w1b = self.hidden_layer.get_weights()[1]
+            wn = self.hidden_layer.get_weights()
+            w1 = wn[0]
             w2 = self.output_layer.get_weights()[0]
             w = (w1+tf.transpose(w2))/2
-            # self.hidden_layer.set_weights([w,[w1b]]) #Not working, complaining about weights.
-            self.output_layer.set_weights([tf.transpose(w)]) #This works
+            wn[0] = w
+            self.hidden_layer.set_weights(wn)
+            self.output_layer.set_weights([tf.transpose(w)])
         else:
             w = self.output_layer.get_weights()[0]
             wn = (w + tf.transpose(w))/2
             self.output_layer.set_weights([wn])
 
-    def update_predictor(self, F, eps, method):
-        # TODO runs, but check if correct
+    def update_predictor(self, F_, eps, method):
+        # TODO runs, but check if both are correct
+        F = tf.identity(F_)
         assert self.hidden_size is None, \
             'Predictor in DirectPred should have 1 layer!'
 
@@ -77,8 +79,13 @@ class MLPHead(tfkl.Layer):
             p_diag = tf.linalg.diag(p)
             w = tf.matmul(eigvec, p_diag)
             w = tf.matmul(w, eigvec, transpose_b=True)
+
         elif method == 'DirectCopy':
-            pass
+            # TODO: should we normalize? It is stated in the paper but not in the code
+            # TODO: also, which norm should we use
+            F = tf.linalg.normalize(F, ord='fro', axis=[0,1])[0]
+            n, _ = F.shape
+            w = F + eps * tf.eye((n))
 
         self.output_layer.set_weights([w])
         

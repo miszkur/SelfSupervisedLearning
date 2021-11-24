@@ -14,8 +14,10 @@ def basic_config():
     # EMA momentum for target network.
     config.tau = 0.996
     config.lambda_ = 0.8
+    config.symmetry_reg = False
     config.eigenspace_experiment = False 
     config.image_size = (32, 32) # CIFAR10 size.
+    config.eps = 0.0
     return config
     
 def get_byol():
@@ -29,6 +31,12 @@ def get_eigenspace_experiment():
     config.eigenspace_experiment = True
     return config
 
+def get_eigenspace_experiment_with_symmetry():
+    config = get_byol()
+    config.eigenspace_experiment = True
+    config.symmetry_reg = True
+    return config
+
 def get_simsiam():
     """Returns SimSiam configuration."""
     config = basic_config()
@@ -39,7 +47,16 @@ def get_direct_pred():
     """Returns DirectPred configuration."""
     config = basic_config()
     config.name = 'DirectPred'
-    # config.eps = 0.0 # TODO: this might not be necessary, DirectPred has it like this
+    config.eps = 0.0 # TODO: this might not be necessary, DirectPred has it like this
     config.predictor_hidden_size = None
     return config
 
+def get_direct_copy():
+    """Returns DirectPred configuration."""
+    config = basic_config()
+    config.name = 'DirectCopy'
+    config.eps = 0.3
+    config.lambda_ = 0.5
+    config.predictor_hidden_size = None
+    # self.gamma = ? # TODO: what is gamma in the paper
+    return config
