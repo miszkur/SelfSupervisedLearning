@@ -118,8 +118,8 @@ class Experiment():
             for x in tqdm(ds):
 
                 # Optimize the model
-                x_aug1 = self.data_aug(x)
-                x_aug2 = self.data_aug(x)
+                x_aug1 = self.data_aug.augment(x)
+                x_aug2 = self.data_aug.augment(x)
                 loss_value, h1, h2 = self.grad(x_aug1, x_aug2)
 
                 # Update target network
@@ -185,4 +185,3 @@ class Experiment():
             pickle.dump(self.allignment, f)
         with open(os.path.join(path, 'symmetry.pkl'), 'wb') as f:
             pickle.dump(self.symmetry, f)
-
