@@ -34,7 +34,7 @@ def get_cifar10(
     if not include_labels:
         ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
     else: 
-        data_aug = DataAugSmall(batch_size=batch_size)
+        data_aug = DataAugSmall(batch_size=None)
         ds = ds.map(lambda x, y: (data_aug.augment(x), y), 
             num_parallel_calls=tf.data.AUTOTUNE)
 

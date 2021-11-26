@@ -26,7 +26,10 @@ class DataAugSmall():
         # Variance of CIFAR10 for each channel.
         var = tf.constant([0.2023, 0.1994, 0.2010])
         var = tf.reshape(var, shape=[1,1,1,3])
-        var = tf.repeat(var,axis=0,repeats=batch_size)
+        if batch_size is None:
+            var = tf.repeat(var,axis=0,repeats=1)
+        else:
+            var = tf.repeat(var,axis=0,repeats=batch_size)
         var = tf.repeat(var,axis=1,repeats=width)
         self.var = tf.repeat(var,axis=2,repeats=height)
         # Mean of CIFAR10 for each channel.
@@ -39,7 +42,7 @@ class DataAugSmall():
 
     def augment(self, x, s=1.0):
         new_area = tf.random.uniform(
-            [], 0.8, 1.0, dtype=tf.float32) * self.current_area
+            [], 0.08, 1.0, dtype=tf.float32) * self.current_area
         min_ratio = tf.math.log(3 / 4)
         max_ratio = tf.math.log(4 / 3)
         aspect_ratio = tf.math.exp(tf.random.uniform(
@@ -52,7 +55,10 @@ class DataAugSmall():
         h = tf.minimum(h, self.height)
 
         x = tf.image.random_flip_left_right(x)
-        x = tf.image.random_crop(x, size=[self.batch_size, h, w, 3]) 
+        if self.batch_size is None:
+            x = tf.image.random_crop(x, size=[h, w, 3]) 
+        else:
+            x = tf.image.random_crop(x, size=[self.batch_size, h, w, 3]) 
         x = tf.image.resize(x, [self.width, self.height], method='bicubic')
 
         if tf.random.uniform([], minval=0.0, maxval=1.0) < 0.8:
