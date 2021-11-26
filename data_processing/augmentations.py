@@ -18,7 +18,6 @@ class DataAugSmall():
     """
 
     def __init__(self, width=32, height=32, batch_size=128) -> None:
-        super(DataAugSmall, self).__init__()
         self.width = width
         self.height = height
         self.current_area = self.width * self.height
@@ -62,15 +61,18 @@ class DataAugSmall():
         x = tf.image.resize(x, [self.width, self.height], method='bicubic')
 
         if tf.random.uniform([], minval=0.0, maxval=1.0) < 0.8:
-            x = tf.image.random_brightness(x,max_delta=0.4)
-            x = tf.image.adjust_contrast(x, 0.4)
-            x = tf.image.adjust_saturation(x, 0.4)
-            x = tf.image.random_hue(x, max_delta=0.1)
+            brightness_factor = tf.random.uniform([], minval=0.6, maxval=1.4)
+            x = tf.multiply(x, brightness_factor)
+            # x = tf.image.random_brightness(x,max_delta=0.8)
+            # This might not work as in torch ColorJitter 
+            x = tf.image.adjust_contrast(x, 0.8)
+            x = tf.image.adjust_saturation(x, 0.8)
+            x = tf.image.random_hue(x, max_delta=0.2)
             # x = tf.clip_by_value(x,0,1)
 
         if tf.random.uniform([1], minval=0.0, maxval=1.0) < 0.2:
             x = tf.repeat(tf.image.rgb_to_grayscale(x), 3, axis=-1)
-        x = self.normalize(x)
+        # x = self.normalize(x)
         return x
 
 
@@ -84,7 +86,6 @@ class DataAug():
     """
 
     def __init__(self, width=224, height=224, batch_size=128) -> None:
-        super(DataAug, self).__init__()
         self.width = width
         self.height = height
         self.current_area = self.width * self.height
