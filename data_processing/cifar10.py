@@ -1,6 +1,7 @@
 import tensorflow as tf
 import tensorflow_datasets as tfds
 from typing import Tuple
+from data_processing.augmentations import DataAugSmall
 
 def normalize_img(image, label):
     """Normalizes images: `uint8` -> `float32`."""
@@ -32,6 +33,11 @@ def get_cifar10(
     # Map to return only images:
     if not include_labels:
         ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
+    else: 
+        data_aug = DataAugSmall(batch_size=None)
+        ds = ds.map(lambda x, y: (data_aug.augment(x), y), 
+            num_parallel_calls=tf.data.AUTOTUNE)
+
     if split == 'test':
         ds = ds.batch(batch_size)
         ds = ds.cache()

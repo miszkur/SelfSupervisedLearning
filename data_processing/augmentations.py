@@ -7,11 +7,8 @@ import tensorflow as tf
 import tensorflow_addons as tfa
 import random
 
-tfk = tf.keras
-tfkl = tfk.layers
 
-
-class DataAugSmall(tfkl.Layer):
+class DataAugSmall():
     """Perform augmentation according to DirectPred implementation for CIFAR10.
     
     A random patch of the image is selected, with an area uniformly sampled 
@@ -29,7 +26,10 @@ class DataAugSmall(tfkl.Layer):
         # Variance of CIFAR10 for each channel.
         var = tf.constant([0.2023, 0.1994, 0.2010])
         var = tf.reshape(var, shape=[1,1,1,3])
-        var = tf.repeat(var,axis=0,repeats=batch_size)
+        if batch_size is None:
+            var = tf.repeat(var,axis=0,repeats=1)
+        else:
+            var = tf.repeat(var,axis=0,repeats=batch_size)
         var = tf.repeat(var,axis=1,repeats=width)
         self.var = tf.repeat(var,axis=2,repeats=height)
         # Mean of CIFAR10 for each channel.
@@ -40,9 +40,9 @@ class DataAugSmall(tfkl.Layer):
         x = tf.math.divide(x, self.var)
         return x
 
-    def call(self, x, s=1.0, ):
+    def augment(self, x, s=1.0):
         new_area = tf.random.uniform(
-            [], 0.8, 1.0, dtype=tf.float32) * self.current_area
+            [], 0.08, 1.0, dtype=tf.float32) * self.current_area
         min_ratio = tf.math.log(3 / 4)
         max_ratio = tf.math.log(4 / 3)
         aspect_ratio = tf.math.exp(tf.random.uniform(
@@ -55,7 +55,10 @@ class DataAugSmall(tfkl.Layer):
         h = tf.minimum(h, self.height)
 
         x = tf.image.random_flip_left_right(x)
-        x = tf.image.random_crop(x, size=[self.batch_size, h, w, 3]) 
+        if self.batch_size is None:
+            x = tf.image.random_crop(x, size=[h, w, 3]) 
+        else:
+            x = tf.image.random_crop(x, size=[self.batch_size, h, w, 3]) 
         x = tf.image.resize(x, [self.width, self.height], method='bicubic')
 
         if tf.random.uniform([], minval=0.0, maxval=1.0) < 0.8:
@@ -71,7 +74,7 @@ class DataAugSmall(tfkl.Layer):
         return x
 
 
-class DataAug(tfkl.Layer):
+class DataAug():
     """Crop the image according to BYOL paper.
 
     A random patch of the image is selected, with an area uniformly sampled 
@@ -80,13 +83,14 @@ class DataAug(tfkl.Layer):
     the target size of 224 × 224 using bicubic interpolation.
     """
 
-    def __init__(self, width=224, height=224) -> None:
+    def __init__(self, width=224, height=224, batch_size=128) -> None:
         super(DataAug, self).__init__()
         self.width = width
         self.height = height
         self.current_area = self.width * self.height
+        self.batch_size = batch_size
 
-    def call(self, x, s=1.0, batch_size=128):
+    def augment(self, x, s=1.0):
         new_area = tf.random.uniform(
             [], 0.08, 1.0, dtype=tf.float32) * self.current_area
         min_ratio = tf.math.log(3 / 4)
@@ -101,7 +105,7 @@ class DataAug(tfkl.Layer):
         h = tf.minimum(h, self.height)
 
         x = tf.image.random_flip_left_right(x)
-        x = tf.image.random_crop(x, size=[batch_size, h, w, 3]) 
+        x = tf.image.random_crop(x, size=[self.batch_size, h, w, 3]) 
         x = tf.image.resize(x, [224, 224], method='bicubic')
 
         x = tfa.image.gaussian_filter2d(x,23,0.1+random.random()/10)
