@@ -123,7 +123,7 @@ class ClassificationNetwork(tf.keras.Model):
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)
         self.model.compile(
             optimizer=self.optimizer, 
-            loss=loss
+            loss=loss 
             )
 
     def save_model(self, saved_model_path):
