@@ -22,14 +22,14 @@ class Evaluation():
     def get_gradients(self, batch, labels):
         with tf.GradientTape() as tape:
             x = self.network(batch)
-            loss_value = self.loss(x, labels)
+            loss_value = self.loss(labels, x)
             
         grads = tape.gradient(
             loss_value, 
-            self.network.classification_layer
+            self.network.classification_layer.trainable_variables
             )
         del tape
-        return loss_value, grads
+        return loss_value, grads, x
 
 
     def train(self, 
@@ -43,8 +43,9 @@ class Evaluation():
         self.network.compile(num_examples, batch_size, epochs)
         for epoch in range(epochs):
             epoch_loss_avg = tf.keras.metrics.Mean()
-            for batch, labels in ds:
-                loss_value, grads = self.get_gradients(xbatch, labels)
+            acc_metric = tf.keras.metrics.SparseCategoricalAccuracy()
+            for batch, labels in tqdm(ds):
+                loss_value, grads, x = self.get_gradients(batch, labels)
                 self.network.optimizer.apply_gradients(
                     zip(
                         grads, 
@@ -52,12 +53,19 @@ class Evaluation():
                         )
                     )
                 epoch_loss_avg.update_state(loss_value)
+                acc_metric.update_state(labels, x)
 
-            eval_acc = evaluate(ds_val)
+            train_acc = acc = acc_metric.result().numpy()
+            eval_acc = self.evaluate(ds_val)
             if verbose:
-                print("Epoch {:03d}: Loss: {:.3f}, Acc: {:.3f}".format(
-                    epoch, epoch_loss_avg.result(), eval_acc))
+                print("Epoch {:03d}: Loss: {:.3f}, Train acc: {:.3f}, Val acc: {:.3f}".format(
+                    epoch, epoch_loss_avg.result(), train_acc, eval_acc))
 
     def evaluate(self, ds):
-        results = self.network.evaluate(ds)
-        return results
+        acc_metric = tf.keras.metrics.SparseCategoricalAccuracy()
+        for img, lbl, in ds:
+            results = self.network.predict(img)
+            acc_metric.update_state(lbl, results)
+        
+        acc = acc_metric.result().numpy()
+        return acc

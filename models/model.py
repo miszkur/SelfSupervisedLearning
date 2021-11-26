@@ -116,15 +116,14 @@ class ClassificationNetwork(tf.keras.Model):
         update_steps = epochs * batches_per_epoch
         lr_schedule = tf.keras.optimizers.schedules.PolynomialDecay(
             5e-2, 
-            total_update_steps, 
+            update_steps, 
             5e-4, 
             power=2
             )
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)
         self.model.compile(
             optimizer=self.optimizer, 
-            loss=loss, 
-            metrics=[keras.metrics.SparseCategoricalAccuracy()]
+            loss=loss
             )
 
     def save_model(self, saved_model_path):
