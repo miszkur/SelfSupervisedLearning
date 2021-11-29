@@ -102,7 +102,8 @@ class Experiment():
     def train(
         self, 
         ds: tf.data.Dataset,  
-        save_path: str,
+        saved_encoder_path: str,
+        saved_projection_head_path=None,
         epochs=100,  
         show_history=True):
 
@@ -171,7 +172,8 @@ class Experiment():
                 cosine = self.cosine_sim(eigvec, wp_v)
                 self.allignment.append(cosine)
 
-        self.online_network.save_encoder(save_path)
+        self.online_network.save_encoder(saved_encoder_path)
+        self.online_network.save_projector(saved_projection_head_path)
 
         if self.eigenspace_experiment:
             self.save_eigenspace_experiment_results('results_eigenspace')

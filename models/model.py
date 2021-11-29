@@ -66,6 +66,14 @@ class SiameseNetwork(tf.keras.Model):
             'Path for saving weights should have .h5 extension'
         self.encoder.save_weights(path)
 
+    def save_projector(self, path):
+        if path is None: 
+            return
+
+        assert path[-3:] == '.h5', \
+            'Path for saving weights should have .h5 extension'
+        self.projector.save_weights(path)
+
     def save_model(self, saved_model_path):
         self.model.save(saved_model_path)
 
@@ -79,20 +87,26 @@ class SiameseNetwork(tf.keras.Model):
 class ClassificationNetwork(tf.keras.Model):
     def __init__(
         self, 
-        saved_encoder_path, 
         config, 
-        projection_layers=0, 
+        saved_encoder_path, 
+        saved_projection_path=None, 
         num_classes=10):
         super(ClassificationNetwork, self).__init__()
 
         self.image_size = config.image_size
         self.encoder = ResNet18(self.image_size)
+        self.projection_head = None
+        if saved_projection_path is not None:
+            self.projection_head = MLPHead()
+
         self.classification_layer = tfkl.Dense(
             num_classes, 
             use_bias=True
             )
         self.model = self.build_model()
         self.encoder.load_weights(saved_encoder_path)
+        if saved_projection_path is not None:
+            self.projection_head.load_weights(saved_projection_path)
 
     def build_model(self):
         input = tf.keras.layers.Input(
@@ -101,6 +115,8 @@ class ClassificationNetwork(tf.keras.Model):
                 3)
             )
         x = self.encoder(input, training=False)
+        if self.projection_head is not None:
+            x = self.projection_head(x, training=False)
         x = self.classification_layer(x)
         return tfk.models.Model(inputs=input, outputs=x)
 

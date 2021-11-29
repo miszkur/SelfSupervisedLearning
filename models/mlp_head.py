@@ -4,7 +4,7 @@ import numpy as np
 tfk = tf.keras
 tfkl = tfk.layers 
 
-class MLPHead(tfkl.Layer):
+class MLPHead(tfk.Model):
 
     def __init__(self, hidden_size=512, output_size=128) -> None:
         super(MLPHead, self).__init__()
