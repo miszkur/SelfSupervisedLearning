@@ -171,7 +171,7 @@ class Experiment():
                 cosine = self.cosine_sim(eigvec, wp_v)
                 self.allignment.append(cosine)
 
-        self.online_network.save_model(save_path)
+        self.online_network.save_encoder(save_path)
 
         if self.eigenspace_experiment:
             self.save_eigenspace_experiment_results('results_eigenspace')
