@@ -6,6 +6,7 @@ from models.resnet18 import ResNet18
 from models.mlp_head import MLPHead
 from typing import Tuple
 import matplotlib.pyplot as plt
+
 tfk = tf.keras
 tfkl = tfk.layers
 tfm = tf.math
@@ -20,7 +21,6 @@ class SiameseNetwork(tf.keras.Model):
             self.predictor = MLPHead(hidden_size=predictor_hidden_size)
         self.image_size = image_size
         self.model = self.build_model()
-        # TODO: check axis
         self.cosine_sim = tf.keras.losses.CosineSimilarity(
             axis=1
         )
@@ -61,6 +61,19 @@ class SiameseNetwork(tf.keras.Model):
         loss += self.cosine_sim(x_aug, y)
         return loss
 
+    def save_encoder(self, path):
+        assert path[-3:] == '.h5', \
+            'Path for saving weights should have .h5 extension'
+        self.encoder.save_weights(path)
+
+    def save_projector(self, path):
+        if path is None: 
+            return
+
+        assert path[-3:] == '.h5', \
+            'Path for saving weights should have .h5 extension'
+        self.projector.save_weights(path)
+
     def save_model(self, saved_model_path):
         self.model.save(saved_model_path)
 
@@ -72,26 +85,28 @@ class SiameseNetwork(tf.keras.Model):
 
 
 class ClassificationNetwork(tf.keras.Model):
-
     def __init__(
         self, 
-        saved_model_path, 
         config, 
-        projection_layers=0, 
+        saved_encoder_path, 
+        saved_projection_path=None, 
         num_classes=10):
         super(ClassificationNetwork, self).__init__()
 
         self.image_size = config.image_size
-        siamese_network = SiameseNetwork(
-            config.image_size, config.predictor_hidden_size)
-        siamese_network.load_model(saved_model_path)
-        siamese_network.compile(config.optimizer_params)
-        self.encoder =  siamese_network.encoder
+        self.encoder = ResNet18(self.image_size)
+        self.projection_head = None
+        if saved_projection_path is not None:
+            self.projection_head = MLPHead()
+
         self.classification_layer = tfkl.Dense(
             num_classes, 
             use_bias=True
             )
         self.model = self.build_model()
+        self.encoder.load_weights(saved_encoder_path)
+        if saved_projection_path is not None:
+            self.projection_head.load_weights(saved_projection_path)
 
     def build_model(self):
         input = tf.keras.layers.Input(
@@ -99,7 +114,9 @@ class ClassificationNetwork(tf.keras.Model):
                 self.image_size[1], 
                 3)
             )
-        x = self.encoder(input)
+        x = self.encoder(input, training=False)
+        if self.projection_head is not None:
+            x = self.projection_head(x, training=False)
         x = self.classification_layer(x)
         return tfk.models.Model(inputs=input, outputs=x)
 
@@ -123,7 +140,7 @@ class ClassificationNetwork(tf.keras.Model):
         self.optimizer = tf.keras.optimizers.Adam(learning_rate=lr_schedule)
         self.model.compile(
             optimizer=self.optimizer, 
-            loss=loss
+            loss=loss 
             )
 
     def save_model(self, saved_model_path):
