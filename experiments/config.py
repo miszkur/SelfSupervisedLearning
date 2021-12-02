@@ -11,6 +11,7 @@ def basic_config():
     optimizer_params.momentum = 0.9
     optimizer_params.weight_decay = 0.0004
     config.optimizer_params = optimizer_params
+    config.deeper_projection = False
     # EMA momentum for target network.
     config.tau = 0.996
     config.lambda_ = 0.3 # this is rho in the paper (TODO: change to rho)
@@ -60,4 +61,7 @@ def get_direct_copy():
     # self.gamma = ? # TODO: what is gamma in the paper
     return config
 
-# def get_simclr():
+def deeper_projection():
+    config = basic_config()
+    config.deeper_projection = True
+    config.name = "deeper_projection"

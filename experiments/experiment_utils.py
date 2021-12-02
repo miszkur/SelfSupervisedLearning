@@ -16,10 +16,14 @@ class Experiment():
     def __init__(self, config) -> None:
         self.online_network = SiameseNetwork(
             image_size=config.image_size, 
-            predictor_hidden_size=config.predictor_hidden_size)
+            predictor_hidden_size=config.predictor_hidden_size,
+            deeper_proj=config.deeper_projection)
         self.online_network.compile(config.optimizer_params)
 
-        self.target_network = SiameseNetwork(target=True, image_size=config.image_size)
+        self.target_network = SiameseNetwork(
+            target=True, 
+            image_size=config.image_size,
+            deeper_proj=config.deeper_projection)
         self.target_network.compile(config.optimizer_params)
 
         self.name = config.name
@@ -53,10 +57,11 @@ class Experiment():
             x.assign(x + (1 - tau) * (y - x))
 
         # update projector
-        target = self.target_network.projector.get_weights()
-        online = self.online_network.projector.get_weights()
-        weights = [x + (1 - tau) * (y - x) for x, y in zip(target, online)]
-        self.target_network.projector.set_weights(weights)
+        for target_mlp, online_mlp in zip(self.target_network.projector, self.online_network.projector):
+            target_weight = target_mlp.get_weights()
+            online_weight = online_mlp.get_weights()
+            weights = [x + (1 - tau) * (y - x) for x, y in zip(target_weight, online_weight)]
+            target_mlp.set_weights(weights)
 
     def update_f(self, corr):
         if self.F is None:
