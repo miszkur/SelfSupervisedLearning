@@ -24,15 +24,23 @@ class DataAugSmall():
         self.batch_size = batch_size
         # Variance of CIFAR10 for each channel.
         var = tf.constant([0.2023, 0.1994, 0.2010])
-        var = tf.reshape(var, shape=[1,1,1,3])
-        if batch_size is None:
-            var = tf.repeat(var,axis=0,repeats=1)
-        else:
-            var = tf.repeat(var,axis=0,repeats=batch_size)
-        var = tf.repeat(var,axis=1,repeats=width)
-        self.var = tf.repeat(var,axis=2,repeats=height)
+        self.var = self.reshape_variance(batch_size, var)
         # Mean of CIFAR10 for each channel.
         self.mean = tf.constant([0.4914, 0.4822, 0.4465])
+
+    def reshape_variance(self, batch_size, var):
+        # Variance of CIFAR10 for each channel.
+        if batch_size is None:
+            # If we do not have batches the data is 3D.
+            var = tf.reshape(var, shape=[1,1,3])
+            var = tf.repeat(var,axis=0,repeats=self.width)
+            var = tf.repeat(var,axis=1,repeats=self.height)
+        else:
+            var = tf.reshape(var, shape=[1,1,1,3])
+            var = tf.repeat(var,axis=0,repeats=batch_size)
+            var = tf.repeat(var,axis=1,repeats=self.width)
+            var = tf.repeat(var,axis=2,repeats=self.height)
+        return var
 
     def normalize(self, x):
         x = tf.math.subtract(x, self.mean)
@@ -72,7 +80,7 @@ class DataAugSmall():
 
         if tf.random.uniform([1], minval=0.0, maxval=1.0) < 0.2:
             x = tf.repeat(tf.image.rgb_to_grayscale(x), 3, axis=-1)
-        # x = self.normalize(x)
+        x = self.normalize(x)
         return x
 
 

@@ -34,8 +34,9 @@ def get_cifar10(
     if not include_labels:
         ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
     else: 
+        # Normalize data for supervised training.
         data_aug = DataAugSmall(batch_size=None)
-        ds = ds.map(lambda x, y: (data_aug.augment(x), y), 
+        ds = ds.map(lambda x, y: (data_aug.normalize(x), y), 
             num_parallel_calls=tf.data.AUTOTUNE)
 
     if split == 'test':

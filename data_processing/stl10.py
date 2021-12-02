@@ -37,10 +37,6 @@ def get_stl10(
     # Map to return only images:
     if not include_labels:
         ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
-    else: 
-        data_aug = DataAug(batch_size=None)
-        ds = ds.map(lambda x, y: (data_aug.augment(x), y), 
-            num_parallel_calls=tf.data.AUTOTUNE)
     if split == 'test':
         ds = ds.batch(batch_size)
         ds = ds.cache()
