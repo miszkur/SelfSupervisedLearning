@@ -61,7 +61,8 @@ def get_direct_copy():
     # self.gamma = ? # TODO: what is gamma in the paper
     return config
 
-def deeper_projection():
+def get_deeper_projection():
     config = basic_config()
     config.deeper_projection = True
     config.name = "deeper_projection"
+    return config
