@@ -105,7 +105,7 @@ class Experiment():
         saved_encoder_path: str,
         saved_projection_head_path=None,
         epochs=100,  
-        show_history=True):
+        save_results_epochs=20):
 
         # Create target network.
         for x in ds.take(1):
@@ -172,11 +172,13 @@ class Experiment():
                 cosine = self.cosine_sim(eigvec, wp_v)
                 self.allignment.append(cosine)
 
-        self.online_network.save_encoder(saved_encoder_path)
-        self.online_network.save_projector(saved_projection_head_path)
+            # Save results every n epoch and at the end.
+            if epoch % save_results_epochs == 0 or epoch==(epochs-1):
+                self.online_network.save_encoder(saved_encoder_path)
+                self.online_network.save_projector(saved_projection_head_path)
 
-        if self.eigenspace_experiment:
-            self.save_eigenspace_experiment_results('results_eigenspace')
+                if self.eigenspace_experiment:
+                    self.save_eigenspace_experiment_results('results_eigenspace')
 
     def save_eigenspace_experiment_results(self, path):
         with open(os.path.join(path, 'F_eigenval.pkl'), 'wb') as f:
