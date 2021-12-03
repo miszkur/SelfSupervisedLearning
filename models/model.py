@@ -40,11 +40,17 @@ class SiameseNetwork(tf.keras.Model):
         return y
 
     def compile(self, config):
-        optimizer = tfa.optimizers.SGDW(
-            learning_rate = config.lr, 
-            momentum = config.momentum,
-            weight_decay = config.weight_decay)
+        if config.use_SGDW:
+            optimizer = tfa.optimizers.SGDW(
+                learning_rate = config.lr, 
+                momentum = config.momentum,
+                weight_decay = config.weight_decay)
+        else:
+            optimizer = tfk.optimizers.SGD(
+                learning_rate = config.lr, 
+                momentum = config.momentum)
         self.optimizer = optimizer
+        self.use_L2_weight_decay = config.use_L2_weight_decay
         self.model.compile(optimizer=optimizer, loss=[self.loss])
 
     @tf.function
@@ -59,6 +65,10 @@ class SiameseNetwork(tf.keras.Model):
     def loss(self, x, x_aug, y, y_aug):
         loss = self.cosine_sim(x, y_aug)
         loss += self.cosine_sim(x_aug, y)
+        if self.use_L2_weight_decay:
+            loss += tf.add_n(
+                [tf.nn.l2_loss(v) for v in self.model.trainable_variables
+                if 'bias' not in v.name]) * 0.0004 
         return loss
 
     def save_encoder(self, path):

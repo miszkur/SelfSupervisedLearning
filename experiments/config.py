@@ -10,6 +10,8 @@ def basic_config():
     optimizer_params.lr = 0.03
     optimizer_params.momentum = 0.9
     optimizer_params.weight_decay = 0.0004
+    optimizer_params.use_SGDW = False # if False, SGD will be used.
+    optimizer_params.use_L2_weight_decay = True
     config.optimizer_params = optimizer_params
     # EMA momentum for target network.
     config.tau = 0.996
