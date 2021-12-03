@@ -33,7 +33,6 @@ def get_stl10(
     ds, ds_info = tfds.load(
         'stl10', split=split, with_info=True, as_supervised=True)
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
-    ds = ds.map(resize_to_resnet_input,  num_parallel_calls=tf.data.AUTOTUNE)
     # Map to return only images:
     if not include_labels:
         ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
