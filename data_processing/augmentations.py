@@ -5,6 +5,7 @@ For details, see Appendix B in https://arxiv.org/pdf/2006.07733v3.pdf
 
 import tensorflow as tf
 import tensorflow_addons as tfa
+import numpy as np
 
 
 class DataAugSmall():
@@ -123,7 +124,7 @@ class DataAug():
 
         x = tfa.image.gaussian_filter2d(
             x, 
-            filter_shape=int(0.1*self.width), 
-            sigma=tf.random.uniform([1], minval=0.1, maxval=2.0))
+            filter_shape=9, # 0.1 * STL10 width 
+            sigma=np.random.uniform(low=0.1, high=2.0))
 
         return x
