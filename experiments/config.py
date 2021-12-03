@@ -13,13 +13,14 @@ def basic_config():
     optimizer_params.use_SGDW = False # if False, SGD will be used.
     optimizer_params.use_L2_weight_decay = True
     config.optimizer_params = optimizer_params
+    config.deeper_projection = False
     # EMA momentum for target network.
     config.tau = 0.996
-    config.lambda_ = 0.8
+    config.lambda_ = 0.3 # this is rho in the paper (TODO: change to rho)
     config.symmetry_reg = False
     config.eigenspace_experiment = False 
     config.image_size = (32, 32) # CIFAR10 size.
-    config.eps = 0.0
+    config.eps = 0.1
     return config
     
 def get_byol():
@@ -49,7 +50,6 @@ def get_direct_pred():
     """Returns DirectPred configuration."""
     config = basic_config()
     config.name = 'DirectPred'
-    config.eps = 0.0 # TODO: this might not be necessary, DirectPred has it like this
     config.predictor_hidden_size = None
     return config
 
@@ -61,4 +61,10 @@ def get_direct_copy():
     config.lambda_ = 0.5
     config.predictor_hidden_size = None
     # self.gamma = ? # TODO: what is gamma in the paper
+    return config
+
+def get_deeper_projection():
+    config = basic_config()
+    config.deeper_projection = True
+    config.name = "deeper_projection"
     return config

@@ -12,10 +12,12 @@ tfkl = tfk.layers
 tfm = tf.math
 
 class SiameseNetwork(tf.keras.Model):
-    def __init__(self, image_size: Tuple[int], target=False, predictor_hidden_size=None):
+    def __init__(self, image_size: Tuple[int], target=False, predictor_hidden_size=None, deeper_proj=False):
         super(SiameseNetwork, self).__init__()
         self.encoder = ResNet18(image_size)
-        self.projector = MLPHead()
+        self.projector = [MLPHead()]
+        if deeper_proj:
+            self.projector.insert(0, MLPHead(output_size=None))
         self.target = target
         if not self.target:
             self.predictor = MLPHead(hidden_size=predictor_hidden_size)
@@ -28,12 +30,13 @@ class SiameseNetwork(tf.keras.Model):
     def build_model(self):
         input = tf.keras.layers.Input(shape=(self.image_size[0], self.image_size[1], 3))
         x = self.encoder(input)
-        projection = self.projector(x)
+        for layer in self.projector:
+            x = layer(x)
         if self.target:
-            return tfk.models.Model(inputs=input, outputs=projection)
+            return tfk.models.Model(inputs=input, outputs=x)
 
-        y = self.predictor(projection)
-        return tfk.models.Model(inputs=input, outputs=(y, projection))
+        y = self.predictor(x)
+        return tfk.models.Model(inputs=input, outputs=(y, x))
 
     def call(self, x, training=False):
         y = self.model.call(x, training=training)
@@ -52,14 +55,6 @@ class SiameseNetwork(tf.keras.Model):
         self.optimizer = optimizer
         self.use_L2_weight_decay = config.use_L2_weight_decay
         self.model.compile(optimizer=optimizer, loss=[self.loss])
-
-    @tf.function
-    def l2_loss(self, x, y):
-        # TODO: check axis for debugging
-        x_norm = tfm.l2_normalize(x, axis=-1)
-        y_norm = tfm.l2_normalize(y, axis=-1)
-        output = (x_norm - y_norm) ** 2
-        return tfm.reduce_sum(output)
 
     @tf.function
     def loss(self, x, x_aug, y, y_aug):
@@ -82,16 +77,7 @@ class SiameseNetwork(tf.keras.Model):
 
         assert path[-3:] == '.h5', \
             'Path for saving weights should have .h5 extension'
-        self.projector.save_weights(path)
-
-    def save_model(self, saved_model_path):
-        self.model.save(saved_model_path)
-
-    def load_model(self, saved_model_path):
-        model = tf.keras.models.load_model(
-            saved_model_path, compile=False)
-        self.model = model
-        return model
+        self.projector[0].save_weights(path)
 
 
 class ClassificationNetwork(tf.keras.Model):
@@ -107,7 +93,7 @@ class ClassificationNetwork(tf.keras.Model):
         self.encoder = ResNet18(self.image_size)
         self.projection_head = None
         if saved_projection_path is not None:
-            self.projection_head = MLPHead()
+            self.projection_head = MLPHead(output_size=None)
 
         self.classification_layer = tfkl.Dense(
             num_classes, 

@@ -10,6 +10,7 @@ class MLPHead(tfk.Model):
         super(MLPHead, self).__init__()
 
         self.hidden_size = hidden_size
+        self.output_size = output_size
         self.wp = None
 
         if self.hidden_size is not None:
@@ -21,14 +22,15 @@ class MLPHead(tfk.Model):
             self.batch_norm = tfkl.BatchNormalization(
                 momentum=0.9, 
                 epsilon=1e-5, 
-                center=False # diables beta, in DirectPred affine=False for projector
+                center=False # disables beta, in DirectPred affine=False for projector
                 )
             self.relu = tf.nn.relu
 
-        self.output_layer = tfkl.Dense(
-            output_size, 
-            use_bias=False
-            )
+        if output_size is not None:
+            self.output_layer = tfkl.Dense(
+                output_size, 
+                use_bias=False
+                )
 
     def get_wp(self):
         return self.wp
@@ -101,6 +103,6 @@ class MLPHead(tfk.Model):
             x = self.hidden_layer(x)
             x = self.batch_norm(x, training=training)
             x = self.relu(x)
-        
-        y = self.output_layer(x)
-        return y
+        if self.output_size is not None:
+            x = self.output_layer(x)
+        return x
