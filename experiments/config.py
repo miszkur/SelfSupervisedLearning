@@ -44,6 +44,22 @@ def get_simsiam():
     """Returns SimSiam configuration."""
     config = basic_config()
     config.name = 'SimSiam'
+    config.tau = 1
+    return config
+
+def get_simsiam_pred():
+    """Returns SimSiam with DirectPred configuration."""
+    config = get_direct_pred()
+    config.name = 'SimSiam'
+    config.tau = 1
+    return config
+
+def get_simsiam_symmetric():
+    """Returns SimSiam symmetric configuration."""
+    config = basic_config()
+    config.name = 'SimSiam_Symmetric'
+    config.tau = 1
+    config.symmetry_reg = True
     return config
 
 def get_direct_pred():
@@ -64,7 +80,7 @@ def get_direct_copy():
     return config
 
 def get_deeper_projection():
-    config = basic_config()
+    config = get_direct_pred()
     config.deeper_projection = True
     config.name = "deeper_projection"
     return config
