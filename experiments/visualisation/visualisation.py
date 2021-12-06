@@ -15,13 +15,14 @@ def symmetry(symmetries):
     plt.plot(epochs, symmetries)
     plt.xlabel('Epoch')
     plt.ylabel('Symmetry')
+    plt.title('Assymetric measure')
     plt.show()
 
 
 def eigenspace_allignment(allignments, eigenvalues):
     num_points = len(allignments)
     colors = plt.cm.rainbow(np.linspace(0, 1, num_points))
-    labels = [0, 5, 10, 15, 20, 50]
+    labels = [0, 5, 10, 15, 20, 100]
     
     for i in range(num_points):
         # Sort by sorted eigenvalue index.
