@@ -11,7 +11,8 @@ def normalize_img(image, label):
 
 def get_cifar10(
     split: str, 
-    batch_size=128, 
+    batch_size=128,
+    epochs=101,
     include_labels=False) -> Tuple[tf.data.Dataset, int]:
     """Get STL10 dataset for ResNet model.
 
@@ -22,6 +23,7 @@ def get_cifar10(
         include_labels (bool, optional): If true output dataset consists of 
         tuples (image, label), otherwise it only includes only labels. 
         Defaults to False.
+        epochs (int): how many times to repeat the tf dataset.
 
     Returns:
         Dataset: preprocessed CIFAR10
@@ -42,7 +44,7 @@ def get_cifar10(
         data_aug = DataAugSmall(batch_size=None)
         if not include_labels:
             ds = ds.map(lambda img, _: (data_aug.augment(img), data_aug.augment(img)),  
-            num_parallel_calls=tf.data.AUTOTUNE)
+            num_parallel_calls=tf.data.AUTOTUNE).repeat(epochs)
         else: 
             # Normalize data for supervised training.
             ds = ds.map(lambda x, y: (data_aug.normalize(x), y), 
