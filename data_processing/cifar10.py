@@ -30,15 +30,6 @@ def get_cifar10(
     ds, ds_info = tfds.load(
         'cifar10', split=split, with_info=True, as_supervised=True)
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
-    # Map to return only images:
-    data_aug = DataAugSmall(batch_size=None)
-    if not include_labels:
-        ds = ds.map(lambda img, _: (data_aug.augment(img), data_aug.augment(img)),  
-        num_parallel_calls=tf.data.AUTOTUNE)
-    else: 
-        # Normalize data for supervised training.
-        ds = ds.map(lambda x, y: (data_aug.normalize(x), y), 
-            num_parallel_calls=tf.data.AUTOTUNE)
 
     if split == 'test':
         ds = ds.batch(batch_size)
@@ -51,8 +42,14 @@ def get_cifar10(
         ds = ds.shuffle(1000)
         ds = ds.batch(batch_size, drop_remainder=True)
 
+    data_aug = DataAugSmall(batch_size=None)
+    if not include_labels:
+        ds = ds.map(lambda img, _: (data_aug.augment(img), data_aug.augment(img)),  
+        num_parallel_calls=tf.data.AUTOTUNE)
+    else: 
+        # Normalize data for supervised training.
+        ds = ds.map(lambda x, y: (data_aug.normalize(x), y), 
+            num_parallel_calls=tf.data.AUTOTUNE)
+
     ds = ds.prefetch(tf.data.AUTOTUNE)
     return ds, ds_info.splits[split].num_examples
-
-    
-
