@@ -113,7 +113,7 @@ class Experiment():
         save_results_epochs=20):
 
         # Create target network.
-        for x in ds.take(1):
+        for x, y in ds.take(1):
             self.online_network(x)
             self.target_network(x)
         self.update_target_network(tau=0)
@@ -121,11 +121,7 @@ class Experiment():
         train_loss_results = []
         for epoch in range(epochs):
             epoch_loss_avg = tf.keras.metrics.Mean()
-            for x in tqdm(ds):
-
-                # Optimize the model
-                x_aug1 = self.data_aug.augment(x)
-                x_aug2 = self.data_aug.augment(x)
+            for x_aug1, x_aug2 in tqdm(ds):
                 loss_value, h1, h2 = self.grad(x_aug1, x_aug2)
 
                 # Update target network
