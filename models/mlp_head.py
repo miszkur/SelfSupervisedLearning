@@ -22,7 +22,8 @@ class MLPHead(tfk.Model):
             self.batch_norm = tfkl.BatchNormalization(
                 momentum=0.9, 
                 epsilon=1e-5, 
-                center=False # disables beta, in DirectPred affine=False for projector
+                center=False, # disables beta, in DirectPred affine=False for projector
+                scale=False
                 )
             self.relu = tf.nn.relu
 
