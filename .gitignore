@@ -5,3 +5,4 @@ experiments/saved_model
 experiments/notebooks/data
 experiments/visualisation/__pycache__
 experiments/__pycache__
+experiments/scripts/__pycache__
