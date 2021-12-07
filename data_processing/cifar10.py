@@ -32,6 +32,9 @@ def get_cifar10(
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
 
     if split == 'test':
+        data_aug = DataAugSmall(batch_size=None)
+        ds = ds.map(lambda x, y: (data_aug.normalize(x), y), 
+            num_parallel_calls=tf.data.AUTOTUNE)
         ds = ds.batch(batch_size)
         ds = ds.cache()
     else:
