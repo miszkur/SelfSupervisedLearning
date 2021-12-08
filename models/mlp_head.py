@@ -57,7 +57,6 @@ class MLPHead(tfk.Model):
             self.output_layer.set_weights([wn])
 
     def update_predictor(self, F_, eps, method):
-        # TODO runs, but check if both are correct
         F = tf.identity(F_)
         assert self.hidden_size is None, \
             'Predictor in DirectPred should have 1 layer!'
