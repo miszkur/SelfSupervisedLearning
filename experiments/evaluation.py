@@ -9,10 +9,12 @@ from models.model import ClassificationNetwork
 from data_processing.augmentations import DataAug, DataAugSmall
 
 class Evaluation():
-    def __init__(self, saved_model_path, config) -> None:
+    def __init__(
+        self, saved_encoder_path, config, saved_projection_path=None) -> None:
         self.network = ClassificationNetwork(
             config,
-            saved_model_path
+            saved_encoder_path,
+            saved_projection_path=saved_projection_path
             )
         self.loss = tf.keras.losses.SparseCategoricalCrossentropy(
             from_logits=True
