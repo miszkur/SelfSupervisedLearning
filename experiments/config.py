@@ -45,6 +45,7 @@ def get_simsiam():
     config = basic_config()
     config.name = 'SimSiam'
     config.tau = 1
+    config.eigenspace_experiment = True
     return config
 
 def get_simsiam_pred():
