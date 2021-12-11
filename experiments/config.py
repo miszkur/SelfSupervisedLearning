@@ -44,7 +44,7 @@ def get_simsiam():
     """Returns SimSiam configuration."""
     config = basic_config()
     config.name = 'SimSiam'
-    config.tau = 1
+    config.tau = 0
     config.eigenspace_experiment = True
     return config
 
@@ -52,14 +52,14 @@ def get_simsiam_pred():
     """Returns SimSiam with DirectPred configuration."""
     config = get_direct_pred()
     config.name = 'SimSiam'
-    config.tau = 1
+    config.tau = 0
     return config
 
 def get_simsiam_symmetric():
     """Returns SimSiam symmetric configuration."""
     config = basic_config()
     config.name = 'SimSiam_Symmetric'
-    config.tau = 1
+    config.tau = 0
     config.symmetry_reg = True
     return config
 
