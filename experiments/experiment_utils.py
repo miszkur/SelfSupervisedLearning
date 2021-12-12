@@ -118,11 +118,20 @@ class Experiment():
             self.target_network(x)
         self.update_target_network(tau=0)
 
+        if self.eigenspace_experiment:
+            self.online_network.predictor.update_wp()
+            self.symmetry.append(
+                self.online_network.predictor.symmetry())
+
         train_loss_results = []
         for epoch in range(epochs):
             epoch_loss_avg = tf.keras.metrics.Mean()
             for x_aug1, x_aug2 in tqdm(ds):
                 loss_value, h1, h2 = self.grad(x_aug1, x_aug2)
+
+                if self.symmetry_regularisation:
+                    self.online_network.predictor.update_wp()
+                    self.online_network.predictor.symmetry_reg()
 
                 # Update target network
                 self.update_target_network(self.tau)
@@ -165,9 +174,6 @@ class Experiment():
                 wp_eigval = tf.linalg.eigvals(wp)
                 wp_eigval = tf.math.real(wp_eigval)
                 self.wp_eigenval.append(wp_eigval)
-                
-                if self.symmetry_regularisation:
-                    self.online_network.predictor.symmetry_reg()
 
                 wp_v = tf.matmul(wp, eigvec)
                 cosine = self.cosine_sim(eigvec, wp_v)
