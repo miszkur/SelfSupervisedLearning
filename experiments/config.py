@@ -12,6 +12,7 @@ def basic_config():
     optimizer_params.weight_decay = 0.0004
     optimizer_params.use_SGDW = False # if False, SGD will be used.
     optimizer_params.use_L2_weight_decay = True
+    optimizer_params.only_predictor = False
     config.optimizer_params = optimizer_params
     config.deeper_projection = False
     # EMA momentum for target network.
@@ -61,6 +62,17 @@ def get_simsiam_symmetric():
     config.name = 'SimSiam_Symmetric'
     config.tau = 0
     config.symmetry_reg = True
+    config.eigenspace_experiment = True
+    return config
+
+def get_simsiam_symmetric_predictor_decay():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'SimSiam_Symmetric_pred_decay'
+    config.tau = 0
+    config.symmetry_reg = True
+    config.optimizer_params.only_predictor = True
+    config.eigenspace_experiment = True
     return config
 
 def get_direct_pred():
