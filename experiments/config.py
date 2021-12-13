@@ -83,7 +83,7 @@ def get_simsiam_baseline():
     return config
 
 def get_byol_baseline():
-    "Returns SimSiam with one layer predictor as baseline for SimSiamDirectPred."
+    "Returns BYOL with one layer predictor as baseline for SimSiamDirectPred."
     config = get_byol()
     config.name = 'ByolBaseline'
     config.predictor_hidden_size = None
