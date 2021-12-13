@@ -10,9 +10,9 @@ from data_processing.cifar10 import get_cifar10
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('--epochs', type=int, default=50)
+    parser.add_argument('--epochs', type=int, default=101)
     parser.add_argument(
-        '--path_to_save_encoder', type=str, default='saved_model/encoder.h5')
+        '--path_to_save_encoder', type=str, default='saved_model/byol_asymmetric.h5')
     args = parser.parse_args()
     config = conf.get_eigenspace_experiment()
     ds, _ = get_cifar10(batch_size=config.batch_size, split='train')
