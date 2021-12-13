@@ -79,6 +79,7 @@ def get_simsiam_baseline():
     config = get_simsiam()
     config.name = 'SimSiamBaseline'
     config.predictor_hidden_size = None
+    config.eigenspace_experiment = False
     return config
 
 def get_direct_pred():
