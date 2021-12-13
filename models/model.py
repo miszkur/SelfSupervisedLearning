@@ -55,6 +55,11 @@ class SiameseNetwork(tf.keras.Model):
         self.optimizer = optimizer
         self.use_L2_weight_decay = config.use_L2_weight_decay
         self.only_predictor = config.only_predictor
+        if self.only_predictor:
+            optimizer_pred = tfk.optimizers.SGD(
+                learning_rate = 10 * config.lr, 
+                momentum = config.momentum)
+            self.optimizer_pred = optimizer_pred
         self.model.compile(optimizer=optimizer, loss=[self.loss])
 
     @tf.function

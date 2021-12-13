@@ -73,7 +73,7 @@ class Experiment():
     def grad(self, input_aug1, input_aug2):
         y = self.target_network(input_aug1, training=True)
         y_aug = self.target_network(input_aug2, training=True)
-        with tf.GradientTape() as tape:
+        with tf.GradientTape(persistent=True) as tape:
             x, projector_output = self.online_network(
                 input_aug1, 
                 training=True
@@ -86,9 +86,17 @@ class Experiment():
             y_aug = tf.stop_gradient(y_aug)
             loss_value = self.online_network.loss(x, x_aug, y, y_aug)
         grads = tape.gradient(
-            loss_value, self.online_network.model.trainable_variables)
+            loss_value, self.online_network.encoder.trainable_variables)
         self.online_network.model.optimizer.apply_gradients(
-                    zip(grads, self.online_network.model.trainable_variables))
+                    zip(grads, self.online_network.encoder.trainable_variables))
+        grads = tape.gradient(
+            loss_value, self.online_network.projector.trainable_variables)
+        self.online_network.model.optimizer.apply_gradients(
+                    zip(grads, self.online_network.projector.trainable_variables))
+        grads = tape.gradient(
+            loss_value, self.online_network.predictor.trainable_variables)
+        self.online_network.optimizer_pred.apply_gradients(
+                    zip(grads, self.online_network.predictor.trainable_variables))
         del tape 
 
         return (
