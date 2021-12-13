@@ -86,6 +86,7 @@ def get_direct_pred():
     config = basic_config()
     config.name = 'DirectPred'
     config.predictor_hidden_size = None
+    config.eigenspace_experiment = False
     return config
 
 def get_direct_copy():
