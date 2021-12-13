@@ -57,10 +57,16 @@ def get_simsiam_pred():
 
 def get_simsiam_symmetric():
     """Returns SimSiam symmetric configuration."""
-    config = basic_config()
+    config = get_simsiam()
     config.name = 'SimSiam_Symmetric'
-    config.tau = 0
     config.symmetry_reg = True
+    return config
+
+def get_simsiam_baseline():
+    "Returns SimSiam with one layer predictor as baseline for SimSiamDirectPred."
+    config = get_simsiam()
+    config.name = 'SimSiamBaseline'
+    config.predictor_hidden_size = None
     return config
 
 def get_direct_pred():
@@ -77,7 +83,6 @@ def get_direct_copy():
     config.eps = 0.3
     config.lambda_ = 0.5
     config.predictor_hidden_size = None
-    # self.gamma = ? # TODO: what is gamma in the paper
     return config
 
 def get_deeper_projection():
