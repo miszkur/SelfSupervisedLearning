@@ -73,10 +73,9 @@ class DataAugSmall():
             x = tf.multiply(x, brightness_factor)
             # x = tf.image.random_brightness(x,max_delta=0.8)
             # This might not work as in torch ColorJitter 
-            x = tf.image.adjust_contrast(x, 0.8)
-            x = tf.image.adjust_saturation(x, 0.8)
-            x = tf.image.random_hue(x, max_delta=0.2)
-            # x = tf.clip_by_value(x,0,1)
+            x = tf.image.random_contrast(x, lower=0.6, upper=1.4)
+            x = tf.image.random_saturation(x, lower=0.6, upper=1.4)
+            x = tf.image.random_hue(x, max_delta=0.1)
 
         if tf.random.uniform([1], minval=0.0, maxval=1.0) < 0.2:
             x = tf.repeat(tf.image.rgb_to_grayscale(x), 3, axis=-1)
