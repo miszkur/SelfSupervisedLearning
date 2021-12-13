@@ -33,14 +33,11 @@ def get_stl10(
     ds, ds_info = tfds.load(
         'stl10', split=split, with_info=True, as_supervised=True)
     ds = ds.map(normalize_img,  num_parallel_calls=tf.data.AUTOTUNE)
-    ds = ds.map(resize_to_resnet_input,  num_parallel_calls=tf.data.AUTOTUNE)
     # Map to return only images:
+    data_aug = DataAug(batch_size=None)
     if not include_labels:
-        ds = ds.map(lambda img, _: img,  num_parallel_calls=tf.data.AUTOTUNE)
-    else: 
-        data_aug = DataAug(batch_size=None)
-        ds = ds.map(lambda x, y: (data_aug.augment(x), y), 
-            num_parallel_calls=tf.data.AUTOTUNE)
+        ds = ds.map(lambda img, _: (data_aug.augment(img), data_aug.augment(img)),  
+        num_parallel_calls=tf.data.AUTOTUNE)
     if split == 'test':
         ds = ds.batch(batch_size)
         ds = ds.cache()
@@ -50,7 +47,7 @@ def get_stl10(
         # if it fits into memory, uncomment the following line.
         # ds = ds.shuffle(ds_info.splits[split].num_examples)
         ds = ds.shuffle(1000)
-        ds = ds.batch(batch_size)
+        ds = ds.batch(batch_size, drop_remainder=True)
 
     ds = ds.prefetch(tf.data.AUTOTUNE)
     return ds, ds_info.splits[split].num_examples

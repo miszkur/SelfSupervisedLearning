@@ -2,7 +2,7 @@
 data_processing/__pycache__
 models/__pycache__
 experiments/saved_model
-experiments/notebooks/saved_model
 experiments/notebooks/data
 experiments/visualisation/__pycache__
 experiments/__pycache__
+experiments/scripts/__pycache__

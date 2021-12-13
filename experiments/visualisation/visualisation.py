@@ -10,69 +10,74 @@ def take_sorted(to_sort, sort_by):
         np.flip(np.argsort(sort_by.numpy())), axis=-1)
 
 
-def symmetry(symmetries):
+def symmetry(symmetries, axs, title=True):
     epochs = [5*i for i in range(len(symmetries))]
-    plt.plot(epochs, symmetries)
-    plt.xlabel('Epoch')
-    plt.ylabel('Symmetry')
-    plt.show()
+    axs.plot(epochs, symmetries)
+    axs.set(xlabel='Epoch', ylabel='Symmetry')
+    if title:
+        axs.set_title('Assymetric measure')
 
 
-def eigenspace_allignment(allignments, eigenvalues):
+def eigenspace_allignment(allignments, eigenvalues, axs, title=True):
     num_points = len(allignments)
     colors = plt.cm.rainbow(np.linspace(0, 1, num_points))
-    labels = [0, 5, 10, 15, 20, 50]
+    labels = [0, 5, 10, 15, 20, 100]
     
     for i in range(num_points):
         # Sort by sorted eigenvalue index.
         data = -take_sorted(allignments[i], eigenvalues[0])
         if i * 5 in labels:
-            plt.plot(data, color=colors[i], label=f'Epoch {i*5}')
+            axs.plot(data, color=colors[i], label=f'Epoch {i*5}')
         else:
-            plt.plot(data, color=colors[i])
+            axs.plot(data, color=colors[i])
 
-    plt.xlabel('Sorted eigenvalue index')
-    plt.ylabel('Normalized correlation')
-    plt.title('Eigenspace allignment')
-    plt.legend()
-    plt.show()
+    axs.set(xlabel='Sorted eigenvalue index', ylabel=r'Normalized correlation')
+    if title:
+        axs.set_title('Eigenspace allignment')
+    axs.legend()
 
 
-def eigenvalues_Wp(eigv_wp):
+def eigenvalues_Wp(eigv_wp, axs, title=True):
     num_points = len(eigv_wp)
     colors = plt.cm.rainbow(np.linspace(0, 1, num_points))
-    labels = [0, 5, 10, 15, 20, 50]
+    labels = [0, 5, 10, 15, 20, 100]
     
     for i in range(num_points):
         data = tf.sort(eigv_wp[i], direction='DESCENDING')
         if i * 5 in labels:
-            plt.plot(data, color=colors[i], label=f'Epoch {i*5}')
+            axs.plot(data, color=colors[i], label=f'Epoch {i*5}')
         else:
-            plt.plot(data, color=colors[i])
+            axs.plot(data, color=colors[i])
 
-    plt.ylim((-0.5, 1))
-    plt.xlabel('Sorted eigenvalue index')
-    plt.ylabel(r'Eigenvalue of $W_p$')
-    plt.title(r'Evolvement of eigenvalues $p_j$ of $W_p$')
-    plt.legend()
-    plt.show()
+    axs.set_ylim((-0.5, 1))
+    axs.set(xlabel='Sorted eigenvalue index', ylabel=r'Eigenvalue of $W_p$')
+    if title:
+        axs.set_title(r'Evolvement of eigenvalues $\lambda_{W_p}$ of $W_p$')
+    axs.legend()
 
 
-def eigenvalues_F(eigv_F):
+def eigenvalues_F(eigv_F, axs, title=True, log=True):
 
     num_points = len(eigv_F)
     colors = plt.cm.rainbow(np.linspace(0, 1, num_points))
-    labels = [0, 5, 10, 15, 20, 50]
+    labels = [0, 5, 10, 15, 20, 100]
     
     for i in range(num_points):
-        data = tf.sort(tf.math.log(eigv_F[i]), direction='DESCENDING')
-        if i * 5 in labels:
-            plt.plot(data, color=colors[i], label=f'Epoch {i*5}')
+        if log:
+            data = tf.sort(tf.math.log(eigv_F[i]), direction='DESCENDING')
         else:
-            plt.plot(data, color=colors[i])
+            data = tf.sort(eigv_F[i], direction='DESCENDING')
+        if i * 5 in labels:
+            axs.plot(data, color=colors[i], label=f'Epoch {i*5}')
+        else:
+            axs.plot(data, color=colors[i])
+    if log:
+        axs.set(xlabel='Sorted eigenvalue index', ylabel=r'$\log$ eigenvalue of $F$')
+    else:
+        axs.set_ylim((-1, 10))
+        axs.set(xlabel='Sorted eigenvalue index', ylabel=r'eigenvalue of $F$')
+    if title:
+        axs.set_title(r'Evolvement of eigenvalues $\lambda_F$ of $F$')
+    axs.legend()
 
-    plt.xlabel('Sorted eigenvalue index')
-    plt.ylabel(r'$\log$ eigenvalue of $F$')
-    plt.title(r'Evolvement of eigenvalues $s_j$ of $F$')
-    plt.legend()
-    plt.show()
+

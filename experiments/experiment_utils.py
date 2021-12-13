@@ -16,10 +16,14 @@ class Experiment():
     def __init__(self, config) -> None:
         self.online_network = SiameseNetwork(
             image_size=config.image_size, 
-            predictor_hidden_size=config.predictor_hidden_size)
+            predictor_hidden_size=config.predictor_hidden_size,
+            deeper_proj=config.deeper_projection)
         self.online_network.compile(config.optimizer_params)
 
-        self.target_network = SiameseNetwork(target=True, image_size=config.image_size)
+        self.target_network = SiameseNetwork(
+            target=True, 
+            image_size=config.image_size,
+            deeper_proj=config.deeper_projection)
         self.target_network.compile(config.optimizer_params)
 
         self.name = config.name
@@ -53,10 +57,11 @@ class Experiment():
             x.assign(x + (1 - tau) * (y - x))
 
         # update projector
-        target = self.target_network.projector.get_weights()
-        online = self.online_network.projector.get_weights()
-        weights = [x + (1 - tau) * (y - x) for x, y in zip(target, online)]
-        self.target_network.projector.set_weights(weights)
+        for target_mlp, online_mlp in zip(self.target_network.projector, self.online_network.projector):
+            target_weight = target_mlp.get_weights()
+            online_weight = online_mlp.get_weights()
+            weights = [x + (1 - tau) * (y - x) for x, y in zip(target_weight, online_weight)]
+            target_mlp.set_weights(weights)
 
     def update_f(self, corr):
         if self.F is None:
@@ -105,23 +110,28 @@ class Experiment():
         saved_encoder_path: str,
         saved_projection_head_path=None,
         epochs=100,  
-        show_history=True):
+        save_results_epochs=20):
 
         # Create target network.
-        for x in ds.take(1):
+        for x, y in ds.take(1):
             self.online_network(x)
             self.target_network(x)
         self.update_target_network(tau=0)
 
+        if self.eigenspace_experiment:
+            self.online_network.predictor.update_wp()
+            self.symmetry.append(
+                self.online_network.predictor.symmetry())
+
         train_loss_results = []
         for epoch in range(epochs):
             epoch_loss_avg = tf.keras.metrics.Mean()
-            for x in tqdm(ds):
-
-                # Optimize the model
-                x_aug1 = self.data_aug.augment(x)
-                x_aug2 = self.data_aug.augment(x)
+            for x_aug1, x_aug2 in tqdm(ds):
                 loss_value, h1, h2 = self.grad(x_aug1, x_aug2)
+
+                if self.symmetry_regularisation:
+                    self.online_network.predictor.update_wp()
+                    self.online_network.predictor.symmetry_reg()
 
                 # Update target network
                 self.update_target_network(self.tau)
@@ -164,19 +174,18 @@ class Experiment():
                 wp_eigval = tf.linalg.eigvals(wp)
                 wp_eigval = tf.math.real(wp_eigval)
                 self.wp_eigenval.append(wp_eigval)
-                
-                if self.symmetry_regularisation:
-                    self.online_network.predictor.symmetry_reg()
 
                 wp_v = tf.matmul(wp, eigvec)
                 cosine = self.cosine_sim(eigvec, wp_v)
                 self.allignment.append(cosine)
 
-        self.online_network.save_encoder(saved_encoder_path)
-        self.online_network.save_projector(saved_projection_head_path)
+            # Save results every n epoch and at the end.
+            if epoch % save_results_epochs == 0 or epoch==(epochs-1):
+                self.online_network.save_encoder(saved_encoder_path)
+                self.online_network.save_projector(saved_projection_head_path)
 
-        if self.eigenspace_experiment:
-            self.save_eigenspace_experiment_results('results_eigenspace')
+                if self.eigenspace_experiment:
+                    self.save_eigenspace_experiment_results('results_eigenspace')
 
     def save_eigenspace_experiment_results(self, path):
         with open(os.path.join(path, 'F_eigenval.pkl'), 'wb') as f:
