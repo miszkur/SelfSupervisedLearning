@@ -82,6 +82,14 @@ def get_simsiam_baseline():
     config.eigenspace_experiment = False
     return config
 
+def get_byol_baseline():
+    "Returns BYOL with one layer predictor as baseline for SimSiamDirectPred."
+    config = get_byol()
+    config.name = 'ByolBaseline'
+    config.predictor_hidden_size = None
+    config.eigenspace_experiment = False
+    return config
+
 def get_direct_pred():
     """Returns DirectPred configuration."""
     config = basic_config()
