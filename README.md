@@ -27,3 +27,8 @@ The project structure is as follows:
 
 ```
 
+## Experiments
+
+Stable varsion of SimSiam with symmetric predicitor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
+`simsiam_predictor`.
+
