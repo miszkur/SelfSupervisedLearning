@@ -10,14 +10,14 @@ def basic_config():
     optimizer_params.lr = 0.03
     optimizer_params.momentum = 0.9
     optimizer_params.weight_decay = 0.0004
-    optimizer_params.use_SGDW = False # if False, SGD will be used.
+    optimizer_params.use_SGDW = False # If False, SGD will be used.
     optimizer_params.use_L2_weight_decay = True
-    optimizer_params.only_predictor = False
+    optimizer_params.only_predictor = False # If True, only the predictor has weight decay.
     config.optimizer_params = optimizer_params
     config.deeper_projection = False
     # EMA momentum for target network.
     config.tau = 0.996
-    config.lambda_ = 0.3 # this is rho in the paper (TODO: change to rho)
+    config.rho = 0.3 
     config.symmetry_reg = False
     config.eigenspace_experiment = False 
     config.image_size = (32, 32) # CIFAR10 size.
@@ -103,7 +103,7 @@ def get_direct_copy():
     config = basic_config()
     config.name = 'DirectCopy'
     config.eps = 0.3
-    config.lambda_ = 0.5
+    config.rho = 0.5
     config.predictor_hidden_size = None
     return config
 

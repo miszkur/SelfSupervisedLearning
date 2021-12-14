@@ -28,7 +28,7 @@ class Experiment():
 
         self.name = config.name
         self.tau = config.tau
-        self.lambda_ = config.lambda_
+        self.rho = config.rho
 
         self.eigenspace_experiment = config.eigenspace_experiment
         self.symmetry_regularisation = config.symmetry_reg
@@ -67,7 +67,7 @@ class Experiment():
         if self.F is None:
             self.F = corr
         else:
-            self.F = self.lambda_ * self.F + (1 - self.lambda_) * corr
+            self.F = self.rho * self.F + (1 - self.rho) * corr
 
 
     def grad(self, input_aug1, input_aug2):
