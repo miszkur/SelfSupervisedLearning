@@ -73,6 +73,7 @@ def get_simsiam_symmetric_predictor_decay():
     config.symmetry_reg = True
     config.optimizer_params.only_predictor = True
     config.eigenspace_experiment = True
+    config.optimizer_params.lr = 0.2
     return config
 
 def get_direct_pred():
