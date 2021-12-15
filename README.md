@@ -70,9 +70,9 @@ Siamese network consists of two networks with the same architecture. ResNet-18 (
 
 Below are all available configurations which can be found in `config.py`.
 
-|  Network \ Settings | original                             | Symmetry regularisation                 | One layer predictor  (original: two layers) | 3 layer predictor     |
-|---------------------|--------------------------------------|-----------------------------------------|---------------------------------------------|-----------------------|
-| BYOL                | get_byol / get_eigenspace_experiment | get_eigenspace_experiment_with_symmetry | get_byol_baseline                           | get_deeper_projection |
+|  Network \ Settings | original                             | Symmetry regularisation                 | One layer predictor  (original: two layers) |
+|---------------------|--------------------------------------|-----------------------------------------|---------------------------------------------|
+| BYOL                | get_byol / get_eigenspace_experiment | get_eigenspace_experiment_with_symmetry | get_byol_baseline                           |
 | SimSiam             | get_simsiam                          | get_simsiam_symmetric                   | get_simsiam_baseline  
 
 
