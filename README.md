@@ -66,6 +66,6 @@ Siamese network consists of two networks with the same architecture. ResNet-18 (
 
 ### SimSiam with symmetric predictor
 
-Stable version of SimSiam with symmetric predictor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
+Stable (not collapsing) version of SimSiam with symmetric predictor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
 `simsiam_predictor`.
 
