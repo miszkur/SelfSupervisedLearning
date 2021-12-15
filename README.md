@@ -51,6 +51,8 @@ Contains augmentations and methods for processing CIFAR-10 and STL-10.
 
 Contains notebooks and scripts for running experiments along with visualisation utilities.
 
+All parameter settigns can be found in `config.py`.
+
 ### Models
 
 Contains models for self-supervised pre-training (`SiameseNetwork`) and finetuning 
@@ -63,6 +65,21 @@ Contains models for self-supervised pre-training (`SiameseNetwork`) and finetuni
 Siamese network consists of two networks with the same architecture. ResNet-18 (<img src="https://render.githubusercontent.com/render/math?math=W^{x}_{enc}">) as encoder, which is supposed to create hidden features and a projector head <img src="https://render.githubusercontent.com/render/math?math=W^{x}_{pro}">, which is a two layer MLP, with purpose to map the feature space into a lower dimensional hidden space. The online network also has an additional predictor head, again consisting of a two layer MLP. The target network has a <i>StopGrad</i> function instead of a predictor head. Therefore during back propagation, only the weights of the online network are updated. The loss between the output of the online and target network is equal to the cosine-similarity loss function. Note, that the final loss of one image is the symmetric loss <img src="https://render.githubusercontent.com/render/math?math=\mathcal{L}(\hat{Z}^{(O)}_1, \hat{Z}^{(T)}_2) "> + <img src="https://render.githubusercontent.com/render/math?math=\mathcal{L}(\hat{Z}^{(O)}_2, \hat{Z}^{(T)}_1) ">, since each augmentation is given to both networks.
 
 # Experiments
+
+## Configuration 
+
+Below are all available configurations which can be found in `config.py`.
+
+|  Network \ Settings | original                             | Symmetry regularisation                 | One layer predictor  (original: two layers) | 3 layer predictor     |
+|---------------------|--------------------------------------|-----------------------------------------|---------------------------------------------|-----------------------|
+| BYOL                | get_byol / get_eigenspace_experiment | get_eigenspace_experiment_with_symmetry | get_byol_baseline                           | get_deeper_projection |
+| SimSiam             | get_simsiam                          | get_simsiam_symmetric                   | get_simsiam_baseline  
+
+
+|  Network \ Settings | original        | SimSiam          | 3 layer predictor     |
+|---------------------|-----------------|------------------|-----------------------|
+| DirectPred          | get_direct_pred | get_simsiam_pred | get_deeper_projection |
+| DirectCopy          | get_direct_copy |                  |                       |
 
 ### SimSiam with symmetric predictor
 
