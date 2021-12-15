@@ -8,7 +8,14 @@
 
 This repo reproduces the results of [Understanding Self-Supervised Learning Dynamics without Contrastive Pairs](https://arxiv.org/pdf/2102.06810.pdf) paper. It is a final project for Advanced Deep Learning course at KTH Royal Institute of Technology in Stockholm.
 
-## Project overview
+We implemented <b>all-in-one siamese netwok</b> which can work as:
+
+* [BYOL](https://arxiv.org/pdf/2006.07733v3.pdf)
+* [SimSiam](https://arxiv.org/pdf/2011.10566.pdf)
+* [DirectPred](https://arxiv.org/pdf/2102.06810.pdf)
+* [DirectCopy](https://arxiv.org/pdf/2110.04947.pdf)
+
+# Project overview
 
 The project structure is as follows:
 
@@ -27,8 +34,29 @@ The project structure is as follows:
 
 ```
 
-## Experiments
+### Data processing
+ 
+Contains augmentations and methods for processing CIFAR-10 and STL-10.
 
-Stable varsion of SimSiam with symmetric predicitor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
+### Experiments
+
+Contains notebooks and scripts for running experiments along with visualisation utilities.
+
+### Models
+
+Contains models for self-supervised pre-training (`SiameseNetwork`) and finetuning 
+(`ClassificationNetwork`) and their building blocks.
+
+# Network architecture
+
+![image info](./pictures/network.png)
+
+Siamese network consists of two networks with the same architecture. ResNet-18 ($W^{x}_{enc}$) as encoder, which is supposed to create hidden features and a projector head $W^{x}_{pro}$, which is a two layer MLP, with purpose to map the feature space into a lower dimensional hidden space. The online network also has an additional predictor head, again consisting of a two layer MLP. The target network has a <i>StopGrad</i> function instead of a predictor head. Therefore during back propagation, only the weights of the online network are updated. The loss between the output of the online and target network is equal to the cosine-similarity loss function. Note, that the final loss of one image is the symmetric loss $\mathcal{L}(\hat{Z}^{(O)}_1, \hat{Z}^{(T)}_2) + \mathcal{L}(\hat{Z}^{(O)}_2, \hat{Z}^{(T)}_1)$, since each augmentation is given to both networks.
+
+# Experiments
+
+### SimSiam with symmetric predictor
+
+Stable version of SimSiam with symmetric predictor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
 `simsiam_predictor`.
 
