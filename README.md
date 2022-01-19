@@ -105,6 +105,7 @@ For detailed results see report of our project.
 All our experiments were run on CIFAR-10 due to computational constraints. 
 Self-Supervised pretraining takes around 4 hours 30 minutes on GCP's V100.
 
+## Accuracy on CIFAR-10
 <div align="center">
 
 | Model | Config | Accuracy  |
@@ -114,6 +115,21 @@ Self-Supervised pretraining takes around 4 hours 30 minutes on GCP's V100.
 
 
 ![image info](./pictures/results.png)
-Results for DirectPred and DirectCopy with and without EMA. SGD baseline is BYOL with one layer predictor. 
+Figure 1: Results for DirectPred and DirectCopy with and without EMA. SGD baseline is BYOL with one layer predictor. 
 
+</div>
+
+## Eigenspace allignment
+
+First, we pre-train BYOL and SimSiam keep track of the predictor heads symmetry and eigenspace
+alignment. In Figure 2 we can see, that the assumption of an symmetric predictor <img src="https://render.githubusercontent.com/render/math?math=W_p "> holds. Even
+without symmetry regularisation, Wp approaches symmetry during training. Also, we can see that for
+all non-zero eigenvalues of Wp the eigenspaces between F and <img src="https://render.githubusercontent.com/render/math?math=W_p "> align as the training progresses.
+
+<div align="center">
+
+![image info](./pictures/byol.png)
+Figure 2: Pre-training BYOL for 100 epochs of CIFAR-10. Top row: BYOL without symmetry
+regularisation on <img src="https://render.githubusercontent.com/render/math?math=W_p ">. Bottom row: BYOL with symmetry regularisation on <img src="https://render.githubusercontent.com/render/math?math=W_p ">. The eigenvalues of
+F are plotted on the log scale, since the eigenvalues vary a lot.
 </div>
