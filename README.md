@@ -95,7 +95,7 @@ python -m direct_pred [--epochs num_epochs]
 ```
 
 Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
-Pretrained model will be saved in `saved_model` directory. 
+Pretrained model will be saved in `saved_model` directory. There are models already available in those folders.
 For supervised fine tuning you can use `classification.ipynb`. 
 
 
