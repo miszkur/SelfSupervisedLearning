@@ -73,7 +73,7 @@ Below are all available configurations which can be found in `config.py`.
 |  Network \ Settings | original                             | Symmetry regularisation                 | One layer predictor  (original: two layers) |
 |---------------------|--------------------------------------|-----------------------------------------|---------------------------------------------|
 | BYOL                | get_byol / get_eigenspace_experiment | get_eigenspace_experiment_with_symmetry | get_byol_baseline                           |
-| SimSiam             | get_simsiam                          | get_simsiam_symmetric                   | get_simsiam_baseline  
+| SimSiam             | get_simsiam                          | get_simsiam_symmetric                   | get_simsiam_baseline                        |
 
 
 |  Network \ Settings | original        | SimSiam          | 3 layer predictor     |
@@ -86,3 +86,34 @@ Below are all available configurations which can be found in `config.py`.
 Stable (not collapsing) version of SimSiam with symmetric predictor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
 `simsiam_predictor`.
 
+### How to run 
+
+For pretraining you can use one of the scripts in `experiments/scripts` e.g. by running
+
+```bash
+python -m direct_pred [--epochs num_epochs]
+```
+
+Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
+Pretrained model will be saved in `saved_model` directory. 
+For supervised fine tuning you can use `classification.ipynb`. 
+
+
+# Results
+
+For detailed results see report of our project.
+All our experiments were run on CIFAR-10 due to computational constraints. 
+Self-Supervised pretraining takes around 4 hours 30 minutes on GCP's V100.
+
+<div align="center">
+
+| Model | Config | Accuracy  |
+|-------|---------|------------|
+| BYOL | get_byol | 85.7% |
+| SimSiam | get_simsiam | 79.4%|  
+
+
+![image info](./pictures/results.png)
+Results for DirectPred and DirectCopy with and without EMA. SGD baseline is BYOL with one layer predictor. 
+
+</div>
