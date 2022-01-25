@@ -10,7 +10,6 @@ def basic_config():
     optimizer_params.lr = 0.03
     optimizer_params.momentum = 0.9
     optimizer_params.weight_decay = 0.0004
-    optimizer_params.use_SGDW = False # If False, SGD will be used.
     optimizer_params.use_L2_weight_decay = True
     optimizer_params.only_predictor = False # If True, only the predictor has weight decay.
     config.optimizer_params = optimizer_params
@@ -57,7 +56,7 @@ def get_simsiam_pred():
     return config
 
 def get_simsiam_symmetric():
-    """Returns SimSiam symmetric configuration."""
+    """Returns SimSiam with symmetric predictor configuration."""
     config = get_simsiam()
     config.name = 'SimSiam_Symmetric'
     config.symmetry_reg = True
@@ -99,7 +98,7 @@ def get_direct_pred():
     return config
 
 def get_direct_copy():
-    """Returns DirectPred configuration."""
+    """Returns DirectCopy configuration."""
     config = basic_config()
     config.name = 'DirectCopy'
     config.eps = 0.3
