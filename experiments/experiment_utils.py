@@ -50,6 +50,7 @@ class Experiment():
             reduction=tf.keras.losses.Reduction.NONE
             )
 
+    @tf.function
     def update_target_network(self, tau):
 
         # update encoder
@@ -57,11 +58,8 @@ class Experiment():
             x.assign(x + (1 - tau) * (y - x))
 
         # update projector
-        for target_mlp, online_mlp in zip(self.target_network.projector, self.online_network.projector):
-            target_weight = target_mlp.get_weights()
-            online_weight = online_mlp.get_weights()
-            weights = [x + (1 - tau) * (y - x) for x, y in zip(target_weight, online_weight)]
-            target_mlp.set_weights(weights)
+        for x, y in zip(self.target_network.projector.variables, self.online_network.projector.variables):
+            x.assign(x + (1 - tau) * (y - x))
 
     def update_f(self, corr):
         if self.F is None:
@@ -69,7 +67,7 @@ class Experiment():
         else:
             self.F = self.rho * self.F + (1 - self.rho) * corr
 
-
+    @tf.function
     def grad(self, input_aug1, input_aug2):
         y = self.target_network(input_aug1, training=True)
         y_aug = self.target_network(input_aug2, training=True)
@@ -97,7 +95,7 @@ class Experiment():
             projector_output_aug
         )
 
-
+    @tf.function
     def cosine_similarity(self, x, y):
         x = tf.math.l2_normalize(x, axis=0)
         y = tf.math.l2_normalize(y, axis=0)
