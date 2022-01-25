@@ -21,6 +21,7 @@ class Evaluation():
             )
         # self.data_aug = DataAugSmall(batch_size=config.batch_size)
 
+    @tf.function
     def get_gradients(self, batch, labels):
         with tf.GradientTape() as tape:
             x = self.network(batch)
@@ -30,8 +31,14 @@ class Evaluation():
             loss_value, 
             self.network.classification_layer.trainable_variables
             )
+        self.network.optimizer.apply_gradients(
+            zip(
+                grads, 
+                self.network.classification_layer.trainable_variables
+                )
+            )
         del tape
-        return loss_value, grads, x
+        return loss_value, x
 
 
     def train(self, 
@@ -47,13 +54,7 @@ class Evaluation():
             epoch_loss_avg = tf.keras.metrics.Mean()
             acc_metric = tf.keras.metrics.SparseCategoricalAccuracy()
             for batch, labels in tqdm(ds):
-                loss_value, grads, x = self.get_gradients(batch, labels)
-                self.network.optimizer.apply_gradients(
-                    zip(
-                        grads, 
-                        self.network.classification_layer.trainable_variables
-                        )
-                    )
+                loss_value, x = self.get_gradients(batch, labels)
                 epoch_loss_avg.update_state(loss_value)
                 acc_metric.update_state(labels, x)
 
