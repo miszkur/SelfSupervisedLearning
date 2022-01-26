@@ -66,27 +66,7 @@ Siamese network consists of two networks with the same architecture. ResNet-18 (
 
 # Experiments
 
-## Configuration 
-
-Below are all available configurations which can be found in `config.py`.
-
-|  Network \ Settings | original                             | Symmetry regularisation                 | One layer predictor  (original: two layers) |
-|---------------------|--------------------------------------|-----------------------------------------|---------------------------------------------|
-| BYOL                | get_byol / get_eigenspace_experiment | get_eigenspace_experiment_with_symmetry | get_byol_baseline                           |
-| SimSiam             | get_simsiam                          | get_simsiam_symmetric                   | get_simsiam_baseline                        |
-
-
-|  Network \ Settings | original        | SimSiam          | 3 layer predictor     |
-|---------------------|-----------------|------------------|-----------------------|
-| DirectPred          | get_direct_pred | get_simsiam_pred | get_deeper_projection |
-| DirectCopy          | get_direct_copy |                  |                       |
-
-### SimSiam with symmetric predictor
-
-Stable (not collapsing) version of SimSiam with symmetric predictor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
-`simsiam_predictor`.
-
-### How to run 
+## How to run 
 
 To run training pipeline (pretraining + finetuning), from the main directory, run:
 
@@ -115,6 +95,27 @@ To check the final accuracy on the test set run
 ```bash
 python test.py --name SAVE_DIR_NAME
 ```
+
+## Configuration 
+
+Below are all available configurations which can be found in `config.py`.
+
+|  Network \ Settings | original                             | Symmetry regularisation                 | One layer predictor  (original: two layers) |
+|---------------------|--------------------------------------|-----------------------------------------|---------------------------------------------|
+| BYOL                | get_byol / get_eigenspace_experiment | get_eigenspace_experiment_with_symmetry | get_byol_baseline                           |
+| SimSiam             | get_simsiam                          | get_simsiam_symmetric                   | get_simsiam_baseline                        |
+
+
+|  Network \ Settings | original        | SimSiam          | 3 layer predictor     |
+|---------------------|-----------------|------------------|-----------------------|
+| DirectPred          | get_direct_pred | get_simsiam_pred | get_deeper_projection |
+| DirectCopy          | get_direct_copy |                  |                       |
+
+### SimSiam with symmetric predictor
+
+Stable (not collapsing) version of SimSiam with symmetric predictor (with different learning rate and weight decay for predictor and the rest of the network) can be found on branch 
+`simsiam_predictor`.
+
 
 # Results
 
