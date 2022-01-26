@@ -63,9 +63,7 @@ def main():
     args = parser.parse_args()
 
     config = get_config(args)
-    config.batch_size = 10
     ds, _ = get_cifar10(batch_size=config.batch_size, split='train')
-    ds = ds.take(5)
 
     results_path = make_dir_if_needed(os.path.join(RESULTS_DIR, args.name))
     encoder_path = os.path.join(results_path, 'pre_trained_encoder.h5')
@@ -80,18 +78,18 @@ def main():
         eigenspace_results_path=eigenspace_results_path,
         epochs=args.epochs_pretraining)
 
-    # print('\n\n=== Supervised fine-tuning ===')
-    # ev = eval.Evaluation(encoder_path, config)
-    # ds, num_examples = get_cifar10(
-    #     batch_size=config.batch_size, split='train', include_labels=True)
-    # ds_test, _ = get_cifar10(
-    #     batch_size=config.batch_size, split='test', include_labels=True)
+    print('\n\n=== Supervised fine-tuning ===')
+    ev = eval.Evaluation(encoder_path, config)
+    ds, num_examples = get_cifar10(
+        batch_size=config.batch_size, split='train', include_labels=True)
+    ds_test, _ = get_cifar10(
+        batch_size=config.batch_size, split='test', include_labels=True)
     
-    # ev.train(
-    #     ds, ds_test, num_examples, 
-    #     batch_size=config.batch_size, 
-    #     epochs=args.epochs_finetuning,
-    #     saved_model_path=classifier_path)
+    ev.train(
+        ds, ds_test, num_examples, 
+        batch_size=config.batch_size, 
+        epochs=args.epochs_finetuning,
+        saved_model_path=classifier_path)
 
 
 if __name__ == '__main__':
