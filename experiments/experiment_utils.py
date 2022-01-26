@@ -185,7 +185,7 @@ class Experiment():
                 self.online_network.save_projector(saved_projection_head_path)
 
                 if self.eigenspace_experiment:
-                    self.save_eigenspace_experiment_results('results_eigenspace')
+                    self.save_eigenspace_experiment_results('results/results_eigenspace')
 
     def save_eigenspace_experiment_results(self, path):
         with open(os.path.join(path, 'F_eigenval.pkl'), 'wb') as f:

@@ -7,6 +7,7 @@ from data_processing.cifar10 import get_cifar10
 
 MODELS = ['byol', 'simsiam', 'directpred', 'directcopy']
 
+
 def get_config(args):
     if args.model == 'byol':
         if args.eigenspace:
@@ -59,8 +60,8 @@ def main():
     config = get_config(args)
     ds, _ = get_cifar10(batch_size=config.batch_size, split='train')
     
-    encoder_path = os.path.join('saved_models', 'encoders', f'{args.name}.h5')
-    classifier_path = os.path.join('saved_models', 'classifiers', args.name)
+    encoder_path = os.path.join('results', 'saved_models', 'encoders', f'{args.name}.h5')
+    classifier_path = os.path.join('results', 'saved_models', 'classifiers', args.name)
     
     print('=== Self-supervised pretraining ===')
     experiment = eu.Experiment(config=config)
@@ -81,6 +82,7 @@ def main():
         batch_size=config.batch_size, 
         epochs=args.epochs_finetuning,
         saved_model_path=classifier_path)
+
 
 if __name__ == '__main__':
     main()
