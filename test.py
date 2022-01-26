@@ -46,7 +46,7 @@ def main():
         type=str, default='classifier',
         help='Specifies folder name of finetuned classifier.')
     args = parser.parse_args()
-    classifier_path = os.path.join('saved_models', 'classifiers', args.classifier_dir)
+    classifier_path = os.path.join('results', args.name, 'classifier')
 
     # Config is only needed for batch size (the same for all models).
     config = configs.get_byol()

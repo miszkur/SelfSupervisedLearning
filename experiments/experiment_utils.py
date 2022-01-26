@@ -109,6 +109,7 @@ class Experiment():
         ds: tf.data.Dataset,  
         saved_encoder_path: str,
         saved_projection_head_path=None,
+        eigenspace_results_path='',
         epochs=100,  
         save_results_epochs=20):
 
@@ -185,7 +186,7 @@ class Experiment():
                 self.online_network.save_projector(saved_projection_head_path)
 
                 if self.eigenspace_experiment:
-                    self.save_eigenspace_experiment_results('results/results_eigenspace')
+                    self.save_eigenspace_experiment_results(eigenspace_results_path)
 
     def save_eigenspace_experiment_results(self, path):
         with open(os.path.join(path, 'F_eigenval.pkl'), 'wb') as f:

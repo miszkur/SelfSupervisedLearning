@@ -6,6 +6,7 @@ import experiments.evaluation as eval
 from data_processing.cifar10 import get_cifar10
 
 MODELS = ['byol', 'simsiam', 'directpred', 'directcopy']
+RESULTS_DIR = 'results'
 
 
 def get_config(args):
@@ -30,6 +31,10 @@ def get_config(args):
     elif args.model == 'directcopy':
         return configs.get_direct_copy()
 
+def make_dir_if_needed(path):
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
 
 def main():
     parser = argparse.ArgumentParser()
@@ -58,30 +63,35 @@ def main():
     args = parser.parse_args()
 
     config = get_config(args)
+    config.batch_size = 10
     ds, _ = get_cifar10(batch_size=config.batch_size, split='train')
-    
-    encoder_path = os.path.join('results', 'saved_models', 'encoders', f'{args.name}.h5')
-    classifier_path = os.path.join('results', 'saved_models', 'classifiers', args.name)
-    
+    ds = ds.take(5)
+
+    results_path = make_dir_if_needed(os.path.join(RESULTS_DIR, args.name))
+    encoder_path = os.path.join(results_path, 'pre_trained_encoder.h5')
+    eigenspace_results_path = make_dir_if_needed(os.path.join(results_path, 'eigenspace_results'))
+    classifier_path = make_dir_if_needed(os.path.join(results_path, 'classifier'))
+
     print('=== Self-supervised pretraining ===')
     experiment = eu.Experiment(config=config)
     experiment.train(
         ds, 
         saved_encoder_path=encoder_path, 
+        eigenspace_results_path=eigenspace_results_path,
         epochs=args.epochs_pretraining)
 
-    print('\n\n=== Supervised fine-tuning ===')
-    ev = eval.Evaluation(encoder_path, config)
-    ds, num_examples = get_cifar10(
-        batch_size=config.batch_size, split='train', include_labels=True)
-    ds_test, _ = get_cifar10(
-        batch_size=config.batch_size, split='test', include_labels=True)
+    # print('\n\n=== Supervised fine-tuning ===')
+    # ev = eval.Evaluation(encoder_path, config)
+    # ds, num_examples = get_cifar10(
+    #     batch_size=config.batch_size, split='train', include_labels=True)
+    # ds_test, _ = get_cifar10(
+    #     batch_size=config.batch_size, split='test', include_labels=True)
     
-    ev.train(
-        ds, ds_test, num_examples, 
-        batch_size=config.batch_size, 
-        epochs=args.epochs_finetuning,
-        saved_model_path=classifier_path)
+    # ev.train(
+    #     ds, ds_test, num_examples, 
+    #     batch_size=config.batch_size, 
+    #     epochs=args.epochs_finetuning,
+    #     saved_model_path=classifier_path)
 
 
 if __name__ == '__main__':
