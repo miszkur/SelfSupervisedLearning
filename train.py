@@ -62,14 +62,14 @@ def main():
     encoder_path = os.path.join('saved_models', 'encoders', f'{args.name}.h5')
     classifier_path = os.path.join('saved_models', 'classifiers', args.name)
     
-    # Self-supervised pretraining
+    print('=== Self-supervised pretraining ===')
     experiment = eu.Experiment(config=config)
     experiment.train(
         ds, 
-        saved_encoder_path=args.encoder_path, 
+        saved_encoder_path=encoder_path, 
         epochs=args.epochs_pretraining)
 
-    # Supervised fine-tuning
+    print('\n\n=== Supervised fine-tuning ===')
     ev = eval.Evaluation(encoder_path, config)
     ds, num_examples = get_cifar10(
         batch_size=config.batch_size, split='train', include_labels=True)
