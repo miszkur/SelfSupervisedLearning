@@ -42,7 +42,7 @@ def evaluate(ds, model):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        '--classifier_dir', 
+        '--name', 
         type=str, default='classifier',
         help='Specifies folder name of finetuned classifier.')
     args = parser.parse_args()
