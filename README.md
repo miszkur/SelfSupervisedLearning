@@ -88,16 +88,33 @@ Stable (not collapsing) version of SimSiam with symmetric predictor (with differ
 
 ### How to run 
 
-For pretraining you can use one of the scripts in `experiments/scripts` e.g. by running
+To run training pipeline (pretraining + finetuning), from the main directory, run:
 
 ```bash
-python -m direct_pred [--epochs num_epochs]
+python train.py --model MODEL_NAME --name SAVE_DIR_NAME
 ```
 
-Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
-Pretrained model will be saved in `saved_model` directory. There are models already available in those folders.
-For supervised fine tuning you can use `classification.ipynb`. 
+Where `MODEL_NAME` can be one of: byol, simsiam, directpred,directcopy.
+You can also specify number of epochs for pretraining with `--epochs_pretraining` flag (default: 101) and finetuning with `--epochs_finetuning` flag (default: 50). 
 
+Additionaly the following flags can be used to run different experiments:
+
+- `--symmetry`           to impose symmetry regularisation on predictor (Wp)
+-  `--eigenspace`          to track eigenspace evolvement. Results of eigenspace evolvement are saved in `results/SAVE_DIR_NAME/eigenspace_results`
+- `--one_layer_predictor`
+                        Make predictor consist of only one layer (only applicable to BYOL and SimSiam)
+
+
+Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
+Pretrained encoder will be saved in `results/SAVE_DIR_NAME` directory as a `.h5` file. Finetuned classifier will be saved in `results/SAVE_DIR_NAME/classifier` as a keras model.
+
+There are models already available in those folders.
+
+To check the final accuracy on the test set run 
+
+```bash
+python test.py --name SAVE_DIR_NAME
+```
 
 # Results
 

@@ -58,7 +58,7 @@ def main():
         help='Number of epochs for supervised fine tuning')
     parser.add_argument(
         '--name', 
-        type=str, default='encoder',
+        type=str, required=True,
         help='Specifies filename of pretrained encoder and folder name for finetuned classifier.')
     args = parser.parse_args()
 

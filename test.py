@@ -43,7 +43,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
         '--name', 
-        type=str, default='classifier',
+        type=str, required=True,
         help='Specifies folder name of finetuned classifier.')
     args = parser.parse_args()
     classifier_path = os.path.join('results', args.name, 'classifier')
