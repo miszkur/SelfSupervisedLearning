@@ -43,15 +43,9 @@ class SiameseNetwork(tf.keras.Model):
         return y
 
     def compile(self, config):
-        if config.use_SGDW:
-            optimizer = tfa.optimizers.SGDW(
-                learning_rate = config.lr, 
-                momentum = config.momentum,
-                weight_decay = config.weight_decay)
-        else:
-            optimizer = tfk.optimizers.SGD(
-                learning_rate = config.lr, 
-                momentum = config.momentum)
+        optimizer = tfk.optimizers.SGD(
+            learning_rate = config.lr, 
+            momentum = config.momentum)
         self.optimizer = optimizer
         self.use_L2_weight_decay = config.use_L2_weight_decay
         optimizer_pred = tfk.optimizers.SGD(

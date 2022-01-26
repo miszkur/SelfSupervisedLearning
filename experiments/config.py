@@ -10,10 +10,7 @@ def basic_config():
     optimizer_params.lr = 0.03
     optimizer_params.lr_predictor = 0.03
     optimizer_params.momentum = 0.9
-    optimizer_params.weight_decay = 0.0004
-    optimizer_params.use_SGDW = False # if False, SGD will be used.
     optimizer_params.use_L2_weight_decay = True
-    optimizer_params.only_predictor = False
     optimizer_params.eta_enc = 0.0004 
     optimizer_params.eta_proj = 0.0004 
     optimizer_params.eta_pred = 0.0004 
@@ -75,9 +72,22 @@ def get_simsiam_symmetric_predictor_decay():
     config.name = 'SimSiam_Symmetric_pred_decay'
     config.tau = 0
     config.symmetry_reg = True
-    config.optimizer_params.only_predictor = True
+    config.optimizer_params.eta_enc = 0
+    config.optimizer_params.proj_enc = 0
+    config.eigenspace_experiment = True
+    return config
+
+def get_simsiam_symmetric_predictor_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'SimSiam_Symmetric_pred_decay'
+    config.tau = 0
+    config.symmetry_reg = True
+    config.optimizer_params.eta_enc = 0
+    config.optimizer_params.proj_enc = 0
     config.eigenspace_experiment = True
     config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_predictor = 2
     return config
 
 def get_direct_pred():
