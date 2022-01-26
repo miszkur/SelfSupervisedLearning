@@ -8,11 +8,15 @@ def basic_config():
     config.predictor_hidden_size  = 512
     optimizer_params = ml_collections.ConfigDict()
     optimizer_params.lr = 0.03
+    optimizer_params.lr_predictor = 0.03
     optimizer_params.momentum = 0.9
     optimizer_params.weight_decay = 0.0004
     optimizer_params.use_SGDW = False # if False, SGD will be used.
     optimizer_params.use_L2_weight_decay = True
     optimizer_params.only_predictor = False
+    optimizer_params.eta_enc = 0.0004 
+    optimizer_params.eta_proj = 0.0004 
+    optimizer_params.eta_pred = 0.0004 
     config.optimizer_params = optimizer_params
     config.deeper_projection = False
     # EMA momentum for target network.
