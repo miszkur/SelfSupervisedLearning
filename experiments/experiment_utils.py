@@ -49,7 +49,7 @@ class Experiment():
             axis=0,
             reduction=tf.keras.losses.Reduction.NONE
             )
-
+    @tf.function
     def update_target_network(self, tau):
 
         # update encoder
@@ -69,7 +69,7 @@ class Experiment():
         else:
             self.F = self.lambda_ * self.F + (1 - self.lambda_) * corr
 
-
+    @tf.function
     def grad(self, input_aug1, input_aug2):
         y = self.target_network(input_aug1, training=True)
         y_aug = self.target_network(input_aug2, training=True)
@@ -105,7 +105,7 @@ class Experiment():
             projector_output_aug
         )
 
-
+    @tf.function
     def cosine_similarity(self, x, y):
         x = tf.math.l2_normalize(x, axis=0)
         y = tf.math.l2_normalize(y, axis=0)
