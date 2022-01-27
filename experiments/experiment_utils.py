@@ -49,7 +49,7 @@ class Experiment():
             axis=0,
             reduction=tf.keras.losses.Reduction.NONE
             )
-    @tf.function
+
     def update_target_network(self, tau):
 
         # update encoder
