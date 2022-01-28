@@ -86,6 +86,8 @@ To check the final accuracy on the test set run
 ```bash
 python test.py --name SAVE_DIR_NAME
 ```
+If eigenspace results are in the `SAVE_DIR_NAME`, they will be visualise.
+If you only want visualisation (without running the classifier) add `--only vis` flag.
 
 Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
 
