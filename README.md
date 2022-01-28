@@ -58,15 +58,7 @@ All parameter settigns can be found in `config.py`.
 Contains models for self-supervised pre-training (`SiameseNetwork`) and finetuning 
 (`ClassificationNetwork`) and their building blocks.
 
-# Network architecture
-
-![image info](./pictures/network.png)
-
-Siamese network consists of two networks with the same architecture. ResNet-18 (<img src="https://render.githubusercontent.com/render/math?math=W^{x}_{enc}">) as encoder, which is supposed to create hidden features and a projector head <img src="https://render.githubusercontent.com/render/math?math=W^{x}_{pro}">, which is a two layer MLP, with purpose to map the feature space into a lower dimensional hidden space. The online network also has an additional predictor head, again consisting of a two layer MLP. The target network has a <i>StopGrad</i> function instead of a predictor head. Therefore during back propagation, only the weights of the online network are updated. The loss between the output of the online and target network is equal to the cosine-similarity loss function. Note, that the final loss of one image is the symmetric loss <img src="https://render.githubusercontent.com/render/math?math=\mathcal{L}(\hat{Z}^{(O)}_1, \hat{Z}^{(T)}_2) "> + <img src="https://render.githubusercontent.com/render/math?math=\mathcal{L}(\hat{Z}^{(O)}_2, \hat{Z}^{(T)}_1) ">, since each augmentation is given to both networks.
-
-# Experiments
-
-## How to run 
+# How to run 
 
 To run training pipeline (pretraining + finetuning), from the main directory, run:
 
@@ -96,6 +88,14 @@ python test.py --name SAVE_DIR_NAME
 ```
 
 Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
+
+# Network architecture
+
+![image info](./pictures/network.png)
+
+Siamese network consists of two networks with the same architecture. ResNet-18 (<img src="https://render.githubusercontent.com/render/math?math=W^{x}_{enc}">) as encoder, which is supposed to create hidden features and a projector head <img src="https://render.githubusercontent.com/render/math?math=W^{x}_{pro}">, which is a two layer MLP, with purpose to map the feature space into a lower dimensional hidden space. The online network also has an additional predictor head, again consisting of a two layer MLP. The target network has a <i>StopGrad</i> function instead of a predictor head. Therefore during back propagation, only the weights of the online network are updated. The loss between the output of the online and target network is equal to the cosine-similarity loss function. Note, that the final loss of one image is the symmetric loss <img src="https://render.githubusercontent.com/render/math?math=\mathcal{L}(\hat{Z}^{(O)}_1, \hat{Z}^{(T)}_2) "> + <img src="https://render.githubusercontent.com/render/math?math=\mathcal{L}(\hat{Z}^{(O)}_2, \hat{Z}^{(T)}_1) ">, since each augmentation is given to both networks.
+
+# Experiments
 
 ## Configuration 
 
