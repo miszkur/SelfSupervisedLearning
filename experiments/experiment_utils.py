@@ -29,7 +29,6 @@ class Experiment():
         self.name = config.name
         self.tau = config.tau
         self.rho = config.rho
-
         self.eigenspace_experiment = config.eigenspace_experiment
         self.symmetry_regularisation = config.symmetry_reg
         self.eps = config.eps
@@ -39,7 +38,8 @@ class Experiment():
         self.allignment = []
         self.symmetry = []
         self.should_compute_F = self.eigenspace_experiment or self.name in ['DirectPred', 'DirectCopy']
-        
+        self.freq = config.freq
+        self.freq_counter = 0
         if config.image_size == (32, 32):
             self.data_aug = DataAugSmall(batch_size=config.batch_size)
         else:
@@ -145,11 +145,14 @@ class Experiment():
                     self.update_f(corr)
 
                     if self.name in ['DirectPred', 'DirectCopy']:
-                        self.online_network.predictor.update_predictor(
-                            F_=self.F, 
-                            eps=self.eps,
-                            method=self.name
-                            )
+                        self.freq_counter += 1
+                        if self.freq_counter%self.freq == 0:
+                            self.freq_counter = 0
+                            self.online_network.predictor.update_predictor(
+                                F_=self.F, 
+                                eps=self.eps,
+                                method=self.name
+                                )
 
                 # Track progress
                 epoch_loss_avg.update_state(loss_value)  

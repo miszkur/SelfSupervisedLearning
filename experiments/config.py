@@ -21,6 +21,7 @@ def basic_config():
     config.eigenspace_experiment = False 
     config.image_size = (32, 32) # CIFAR10 size.
     config.eps = 0.1
+    config.freq = 1
     return config
     
 def get_byol():
@@ -95,6 +96,15 @@ def get_direct_pred():
     config.name = 'DirectPred'
     config.predictor_hidden_size = None
     config.eigenspace_experiment = False
+    return config
+
+def get_direct_pred_freq_5():
+    """Returns DirectPred configuration."""
+    config = basic_config()
+    config.name = 'DirectPredFreq5'
+    config.predictor_hidden_size = None
+    config.eigenspace_experiment = False
+    config.freq = 5
     return config
 
 def get_direct_copy():
