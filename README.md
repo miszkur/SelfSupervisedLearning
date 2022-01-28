@@ -85,7 +85,6 @@ Additionaly the following flags can be used to run different experiments:
                         Make predictor consist of only one layer (only applicable to BYOL and SimSiam)
 
 
-Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
 Pretrained encoder will be saved in `results/SAVE_DIR_NAME` directory as a `.h5` file. Finetuned classifier will be saved in `results/SAVE_DIR_NAME/classifier` as a keras model.
 
 There are models already available in those folders.
@@ -95,6 +94,8 @@ To check the final accuracy on the test set run
 ```bash
 python test.py --name SAVE_DIR_NAME
 ```
+
+Alternatively, you can use jupyter notebook, for example see `experiments/notebooks/direct_pred.ipynb`.
 
 ## Configuration 
 
