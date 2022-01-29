@@ -8,11 +8,13 @@ def basic_config():
     config.predictor_hidden_size  = 512
     optimizer_params = ml_collections.ConfigDict()
     optimizer_params.lr = 0.03
+    optimizer_params.lr_pred = 0.03
     optimizer_params.momentum = 0.9
     optimizer_params.weight_decay = 0.0004
+    optimizer_params.weight_decay_pred = 0.0004
+    
     optimizer_params.use_SGDW = False # if False, SGD will be used.
     optimizer_params.use_L2_weight_decay = True
-    optimizer_params.only_predictor = False
     config.optimizer_params = optimizer_params
     config.deeper_projection = False
     # EMA momentum for target network.
@@ -65,15 +67,92 @@ def get_simsiam_symmetric():
     config.eigenspace_experiment = True
     return config
 
-def get_simsiam_symmetric_predictor_decay():
+def get_simsiam_symmetric_predictor_decay_lr_adjusted():
     """Returns SimSiam symmetric with predictor weight decay configuration."""
     config = basic_config()
     config.name = 'SimSiam_Symmetric_pred_decay'
     config.tau = 0
     config.symmetry_reg = True
-    config.optimizer_params.only_predictor = True
-    config.eigenspace_experiment = True
     config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0.0004
+    return config
+
+def get_simsiam_symmetric_no_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'SimSiam_Symmetric_no_decay'
+    config.tau = 0
+    config.symmetry_reg = True
+    config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0
+    return config
+
+def get_simsiam_predictor_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'SimSiam_pred_decay'
+    config.tau = 0
+    config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0.0004
+    return config
+
+def get_simsiam_no_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'SimSiam_no_decay'
+    config.tau = 0
+    config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0
+    return config
+
+def get_byol_symmetric_predictor_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'Byol_Symmetric_pred_decay'
+    config.symmetry_reg = True
+    config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0.0004
+    return config
+
+def get_byol_symmetric_no_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'Byol_Symmetric_no_decay'
+    config.symmetry_reg = True
+    config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0
+    return config
+
+def get_byol_symmetric_predictor_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'Byol_pred_decay'
+    config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0.0004
+    return config
+
+def get_byol_symmetric_no_decay_lr_adjusted():
+    """Returns SimSiam symmetric with predictor weight decay configuration."""
+    config = basic_config()
+    config.name = 'Byol_no_decay'
+    config.optimizer_params.lr = 0.2
+    config.optimizer_params.lr_pred = 2
+    config.optimizer_params.weight_decay = 0
+    config.optimizer_params.weight_decay_pred = 0
     return config
 
 def get_direct_pred():

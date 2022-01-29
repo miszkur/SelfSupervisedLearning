@@ -48,33 +48,40 @@ class SiameseNetwork(tf.keras.Model):
                 learning_rate = config.lr, 
                 momentum = config.momentum,
                 weight_decay = config.weight_decay)
+            optimizer_pred = tfk.optimizers.SGDW(
+                learning_rate = config.lr_pred, 
+                momentum = config.momentum,
+                weight_decay = config.weight_decay_pred)
         else:
             optimizer = tfk.optimizers.SGD(
                 learning_rate = config.lr, 
                 momentum = config.momentum)
+            optimizer_pred = tfk.optimizers.SGD(
+                learning_rate = config.lr_pred, 
+                momentum = config.momentum)
+        self.eta_enc, self.eta_proj = config.weight_decay, config.weight_decay
+        self.eta_pred = config.weight_decay_pred
+        self.optimizer_pred = optimizer_pred
         self.optimizer = optimizer
         self.use_L2_weight_decay = config.use_L2_weight_decay
-        self.only_predictor = config.only_predictor
-        if self.only_predictor:
-            optimizer_pred = tfk.optimizers.SGD(
-                learning_rate = 10 * config.lr, 
-                momentum = config.momentum)
-            self.optimizer_pred = optimizer_pred
+
+
         self.model.compile(optimizer=optimizer, loss=[self.loss])
 
     @tf.function
     def loss(self, x, x_aug, y, y_aug):
         loss = self.cosine_sim(x, y_aug)
         loss += self.cosine_sim(x_aug, y)
-        if self.use_L2_weight_decay:
-            if self.only_predictor:
-                loss += tf.add_n(
-                    [tf.nn.l2_loss(v) for v in self.predictor.trainable_variables
-                    if 'bias' not in v.name]) * 0.0004 
-            else:
-                loss += tf.add_n(
-                    [tf.nn.l2_loss(v) for v in self.model.trainable_variables
-                    if 'bias' not in v.name]) * 0.0004 
+        if self.use_L2_weight_decay:      
+            loss += tf.add_n(
+                [tf.nn.l2_loss(v) for v in self.predictor.trainable_variables
+                if 'bias' not in v.name]) * self.eta_pred 
+            loss += tf.add_n(
+                [tf.nn.l2_loss(v) for v in self.encoder.trainable_variables
+                if 'bias' not in v.name]) * self.eta_enc
+            loss += tf.add_n(
+                [tf.nn.l2_loss(v) for v in self.projector[0].trainable_variables
+                if 'bias' not in v.name]) * self.eta_proj
         return loss
 
     def save_encoder(self, path):
