@@ -16,31 +16,31 @@ def main():
     config = conf.get_simsiam_symmetric_no_decay_lr_adjusted()
     experiment = eu.Experiment(config=config)
     name = config.name + ".h5"
-    experiment.train(ds, name, epochs=2)
+    experiment.train(ds, name, epochs=101)
     print(config.name + " is done ...")
 
     config = conf.get_simsiam_predictor_decay_lr_adjusted()
     experiment = eu.Experiment(config=config)
     name = config.name + ".h5"
-    experiment.train(ds, name, epochs=2)
+    experiment.train(ds, name, epochs=101)
     print(config.name + " is done ...")
 
     config = conf.get_simsiam_no_decay_lr_adjusted()
     experiment = eu.Experiment(config=config)
     name = config.name + ".h5"
-    experiment.train(ds, name, epochs=2)
+    experiment.train(ds, name, epochs=101)
     print(config.name + " is done ...")
 
     config = conf.get_byol_symmetric_predictor_decay_lr_adjusted()
     experiment = eu.Experiment(config=config)
     name = config.name + ".h5"
-    experiment.train(ds, name, epochs=2)
+    experiment.train(ds, name, epochs=101)
     print(config.name + " is done ...")
 
     config = conf.get_byol_symmetric_no_decay_lr_adjusted()
     experiment = eu.Experiment(config=config)
     name = config.name + ".h5"
-    experiment.train(ds, name, epochs=2)
+    experiment.train(ds, name, epochs=101)
     print(config.name + " is done ...")
 
 if __name__=='__main__':
