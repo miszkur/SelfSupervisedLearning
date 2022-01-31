@@ -101,7 +101,7 @@ def get_direct_pred():
 def get_direct_pred_freq_5():
     """Returns DirectPred configuration."""
     config = basic_config()
-    config.name = 'DirectPredFreq5'
+    config.name = 'DirectPred'
     config.predictor_hidden_size = None
     config.eigenspace_experiment = False
     config.freq = 5
