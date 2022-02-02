@@ -13,7 +13,7 @@ def take_sorted(to_sort, sort_by):
 def symmetry(symmetries, axs, title=True):
     epochs = [5*i for i in range(len(symmetries))]
     axs.plot(epochs, symmetries)
-    axs.set(xlabel='Epoch', ylabel='Symmetry')
+    axs.set(xlabel='Epoch', ylabel='Asymmetry measure')
     if title:
         axs.set_title('Assymetric measure')
 
