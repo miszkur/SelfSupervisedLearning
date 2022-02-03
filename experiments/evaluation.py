@@ -63,6 +63,8 @@ class Evaluation():
                 print("Epoch {:03d}: Loss: {:.3f}, Train acc: {:.3f}, Val acc: {:.3f}".format(
                     epoch, epoch_loss_avg.result(), train_acc, eval_acc))
 
+        return eval_acc
+
     def evaluate(self, ds):
         acc_metric = tf.keras.metrics.SparseCategoricalAccuracy()
         for img, lbl, in ds:

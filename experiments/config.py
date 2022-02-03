@@ -135,7 +135,7 @@ def get_byol_symmetric_no_decay_lr_adjusted():
     config.optimizer_params.weight_decay_pred = 0
     return config
 
-def get_byol_symmetric_predictor_decay_lr_adjusted():
+def get_byol_predictor_decay_lr_adjusted():
     """Returns SimSiam symmetric with predictor weight decay configuration."""
     config = basic_config()
     config.name = 'Byol_pred_decay'
@@ -145,7 +145,7 @@ def get_byol_symmetric_predictor_decay_lr_adjusted():
     config.optimizer_params.weight_decay_pred = 0.0004
     return config
 
-def get_byol_symmetric_no_decay_lr_adjusted():
+def get_byol_no_decay_lr_adjusted():
     """Returns SimSiam symmetric with predictor weight decay configuration."""
     config = basic_config()
     config.name = 'Byol_no_decay'
