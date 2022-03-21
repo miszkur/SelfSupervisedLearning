@@ -1,5 +1,5 @@
 ml_collections
-tensorflow==2.6.1
+tensorflow==2.6.3
 tensorflow_datasets==4.2.0
 tensorflow_addons==0.14.0
 numpy==1.19.5
